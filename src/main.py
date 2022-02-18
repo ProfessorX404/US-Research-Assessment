@@ -1,6 +1,7 @@
 import sys
 
 
+
 def main():
     print('The environment is set up correctly!')
     print('Number of arguments:', len(sys.argv), 'arguments.')
