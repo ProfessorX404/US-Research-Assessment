@@ -1,12 +1,24 @@
-NASF_COLUMNS = {2019: [
+# The goal is to make the data easier to standarize by having each set of
+# collumns available under the 'category' and year the set applies to.
+NASF_COLUMNS = {2019: [  # The collumn names per year that have to do with NASF
     'NASF_AG', 'NASF_BIO', 'NASF_COS', 'NASF_ENG', 'NASF_GEO', 'NASF_HLTH',
     'NASF_MATH', 'NASF_NR', 'NASF_PHY', 'NASF_PSY', 'NASF_SOC', 'NASF_OTH',
     'NASF_CLIN_TRIAL', 'NASF_MED']}
 
+# General but neccessary collumns.
+# Usually has to do with the institution itself.
 GENERAL_COLUMNS = {2019: [
     'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
     'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2018']}
 
+# This was originally going to be for the insertion of NaN into the dataset
+# per row, but that ended up not being neccessary. Currently the only used
+# key is 'SUBMISSION_FLAG', to filter for respondents, and the other entries
+# are just used for pulling the valid column names. .
+# Strucuture is FILTER_VALUES[year][column_name], which returns a list of lists
+# in which the first value is the "positive" or "goal" value, and the rest
+# is the columns that should be made NaN if the key value is not
+# FILTER_VALUES[year][column_name][0]
 FILTER_VALUES = {
     2019:
     {'SUBMISSION_FLAG': ['Y', None],

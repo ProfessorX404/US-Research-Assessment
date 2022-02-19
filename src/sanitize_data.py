@@ -31,19 +31,6 @@ def export_to_csv(df, file_path):
     print('Export Successful!')
 
 
-def get_list_from_LoL(list_of_lists):
-    main_list = []
-    for lists in list_of_lists:
-        for lists in lists:
-            if lists != []:
-                main_list.append(lists)
-    return main_list
-
-
-def filter_columns(df, valid_columns):
-    return df.filter(items=valid_columns)
-
-
 def main():
     origin_path, location, year = sys.argv[1:]
     origin_path = abspath(origin_path)
@@ -58,7 +45,7 @@ def main():
     valid_columns.extend(map(lambda x: FILTER_VALUES[year][x][1:],
                              FILTER_VALUES[year].keys()))
     valid_columns = [item for sublist in valid_columns for item in sublist]
-    data = filter_columns(data, valid_columns)
+    data = data.filter(items=valid_columns)
     data = filter_df(data, 'SUBMISSION_FLAG', 'Y')
     # for val in FILTER_VALUES[year].keys():
     #     data = filter_df(
