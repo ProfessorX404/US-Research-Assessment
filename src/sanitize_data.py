@@ -3,7 +3,7 @@ import sys
 from os.path import abspath
 import pandas as pd
 from Constants import NASF_COLUMNS, GENERAL_COLUMNS, FILTER_VALUES
-import numpy as np
+# import numpy as np
 
 
 ''' call using this syntax in terminal:
@@ -18,12 +18,10 @@ import numpy as np
 def filter_df(df, filter_title, filter_val='1', valid_columns=None):
     if valid_columns is None:
         return df[df[filter_title] == filter_val]
-    else:
-        for collumn in valid_columns:
-            print(filter_title + filter_val)
-            print(df[filter_title])
-            df.loc[df[filter_title] == filter_val, filter_title] = np.nan
-        return df
+    # else:
+    #     for collumn in valid_columns:
+    #         df.loc[df[filter_title] == filter_val, filter_title] = np.nan
+    #     return df
 
 
 def export_to_csv(df, file_path):
@@ -48,20 +46,24 @@ def filter_columns(df, valid_columns):
 
 def main():
     origin_path, location, year = sys.argv[1:]
+    origin_path = abspath(origin_path)
+    location = abspath(location)
     year = int(year)
-    print('Data File Path:', abspath(origin_path))
-    print('Location Path: ', abspath(location))
+    print('Data File Path:', origin_path)
+    print('Location Path: ', location)
     print('Year: ', int(year))
     data = pd.read_csv(abspath(origin_path), encoding='ISO-8859-1')
     valid_columns = [GENERAL_COLUMNS[year], NASF_COLUMNS[year]]
+    valid_columns.extend(FILTER_VALUES[year].keys())
     valid_columns.extend(map(lambda x: FILTER_VALUES[year][x][1:],
                              FILTER_VALUES[year].keys()))
-    valid_columns = get_list_from_LoL(valid_columns)
+    valid_columns = [item for sublist in valid_columns for item in sublist]
     data = filter_columns(data, valid_columns)
-    for val in FILTER_VALUES[year].keys():
-        data = filter_df(
-            data, val, FILTER_VALUES[year][val][0],
-            FILTER_VALUES[year][val][1:])
+    data = filter_df(data, 'SUBMISSION_FLAG', 'Y')
+    # for val in FILTER_VALUES[year].keys():
+    #     data = filter_df(
+    #         data, val, FILTER_VALUES[year][val][0],
+    #         FILTER_VALUES[year][val][1:])
     export_to_csv(data, location)
 
 

@@ -10,11 +10,12 @@ GENERAL_COLUMNS = {2019: [
 FILTER_VALUES = {
     2019:
     {'SUBMISSION_FLAG': ['Y', None],
-     'RRBOX': [1],
-     # 'RRBOX':
-     # ['1', 'RR_AG', 'RR_BIO', 'RR_COS', 'RR_ENG', 'RR_GEO', 'RR_HLTH',
-     # 'RR_MATH', 'RR_NR', 'RR_PHY', 'RR_PSY', 'RR_SOC', 'RR_OTH',
-     # 'RR_TFUND'],
+     # 'RRBOX' onward is not needed, I'm just
+     # keeping it in here in case it comes in useful later.
+     'RRBOX':
+     ['1', 'RR_AG', 'RR_BIO', 'RR_COS', 'RR_ENG', 'RR_GEO', 'RR_HLTH',
+      'RR_MATH', 'RR_NR', 'RR_PHY', 'RR_PSY', 'RR_SOC', 'RR_OTH',
+      'RR_TFUND'],
      'NCBOX': ['1', 'NC_FED', 'NC_STA', 'NC_INST', 'NC_TFUND'],
      'PNCBOX':
      ['1', 'PNC_AG_1', 'PNC_BIO_1', 'PNC_COS_1', 'PNC_ENG_1', 'PNC_GEO_1',
