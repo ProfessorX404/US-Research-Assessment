@@ -14,7 +14,7 @@ GENERAL_COLUMNS = {2019: [
 # This was originally going to be for the insertion of NaN into the dataset
 # per row, but that ended up not being neccessary. Currently the only used
 # key is 'SUBMISSION_FLAG', to filter for respondents, and the other entries
-# are just used for pulling the valid column names. .
+# are just used for pulling the valid column names.
 # Strucuture is FILTER_VALUES[year][column_name], which returns a list of lists
 # in which the first value is the "positive" or "goal" value, and the rest
 # is the columns that should be made NaN if the key value is not
