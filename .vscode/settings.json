@@ -5,5 +5,8 @@
         "--max-line-length",
         "79",
         "--experimental"
-    ]
+    ],
+    "python.condaPath": "C:\\ProgramData\\Miniconda3\\Scripts\\conda.exe",
+    "python.defaultInterpreterPath": ".\\.env\\python.exe",
+    "python.terminal.activateEnvironment": true,
 }

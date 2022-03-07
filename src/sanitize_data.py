@@ -51,6 +51,7 @@ def main():
     #     data = filter_df(
     #         data, val, FILTER_VALUES[year][val][0],
     #         FILTER_VALUES[year][val][1:])
+    data = data.replace('S', 0)
     export_to_csv(data, location)
 
 
