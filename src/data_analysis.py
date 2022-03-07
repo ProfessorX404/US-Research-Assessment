@@ -1,9 +1,16 @@
+'''
+Natalie Dean, Xavier Beech
+CSE163
+Set of methods for the analysis of sanitized data from
+the National Science Foundation's Survey of Science and Engineering Research.
+More information on specific functions can be found in function headers. 
+'''
 from pathlib import Path
 import sys
 from os.path import abspath
 import pandas as pd
-#import geopandas as gpd
-#import matplotlob.pyplot as plt
+import geopandas as gpd
+import matplotlob.pyplot as plt
 
 '''
 call using path to the goal file

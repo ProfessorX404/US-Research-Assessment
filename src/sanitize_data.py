@@ -1,3 +1,11 @@
+'''
+Xavier Beech
+CSE163
+Set of methods for sanitizing CSV datasets from public use data files from
+the National Science Foundation's Survey of Science and Engineering Research
+Facilities. Dataset information can be found in
+./raw_data/2019-faciliities-puf-user-guide.pdf
+'''
 from pathlib import Path
 import sys
 from os.path import abspath
@@ -16,15 +24,29 @@ from Constants import NASF_COLUMNS, GENERAL_COLUMNS, FILTER_VALUES
 
 
 def filter_df(df, filter_title, filter_val='1', valid_columns=None):
+    '''
+    Filters DataFrame for columns where the value at
+    (valid_columns, filter_title) equals filter_val, and returns.
+    If valid_columns equals None, filters for all columns.
+    Note: currently only works for valid_columns == None,
+    if not, returns identical DataFrame. Will remove
+    non-None functionality and revise if not needed
+    by release.
+    '''
+    data = df
     if valid_columns is None:
-        return df[df[filter_title] == filter_val]
+        data = data[data[filter_title] == filter_val]
     # else:
-    #     for collumn in valid_columns:
-    #         df.loc[df[filter_title] == filter_val, filter_title] = np.nan
-    #     return df
+    #   for collumn in valid_columns:
+    #       data.loc[data[filter_title] == filter_val, filter_title] = np.nan
+    return data
 
 
 def export_to_csv(df, file_path):
+    '''
+    Exports DataFrame to CSV.
+    Handles non-existent parent diretories and relative paths.
+    '''
     file_path = Path(file_path)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(file_path)
@@ -32,14 +54,21 @@ def export_to_csv(df, file_path):
 
 
 def main():
+    '''
+    Handles main chunk of data sanitization, including initialization and
+    path handling. Returns sanitized file. Currently uses hardcoded settings,
+    however it would be nice to at some point revise it for
+    argument-set instead. Pulls column names on a year-by-year basis
+    from Constants.py
+    '''
     origin_path, location, year = sys.argv[1:]
     origin_path = abspath(origin_path)
     location = abspath(location)
     year = int(year)
     print('Data File Path:', origin_path)
     print('Location Path: ', location)
-    print('Year: ', int(year))
-    data = pd.read_csv(abspath(origin_path), encoding='ISO-8859-1')
+    print('Year: ', year)
+    data = pd.read_csv(origin_path, encoding='ISO-8859-1')
     valid_columns = [GENERAL_COLUMNS[year], NASF_COLUMNS[year]]
     valid_columns.extend(FILTER_VALUES[year].keys())
     valid_columns.extend(map(lambda x: FILTER_VALUES[year][x][1:],
