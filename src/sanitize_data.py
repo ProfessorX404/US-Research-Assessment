@@ -82,12 +82,21 @@ def main():
     # once the values (list-of-lists) have been added they must then be
     # unpacked to create a single list of Strings. More info in Constants.py.
     valid_columns = [item for sublist in valid_columns for item in sublist]
+    # Now that a list of all columns we want to keep has been assembled,
+    # we can finally cut the dataset down to only those columns.
     data = data.filter(items=valid_columns)
+    # Filters only for values which have responses. Frankly I'm not sure
+    # why they'd include non-Y answers in the dataset, but we have to filter
+    # for them just in case.
     data = filter_df(data, 'SUBMISSION_FLAG', 'Y')
+    # Added functionality that is not currently needed (or working).
+    # Will probably be removed for final release. Associated with
+    # RRBOX and on in FILTER_VALUES[2019] (more info in Constants.py)
     # for val in FILTER_VALUES[year].keys():
     #     data = filter_df(
     #         data, val, FILTER_VALUES[year][val][0],
     #         FILTER_VALUES[year][val][1:])
+    #
     data = data.replace('S', 0)
     export_to_csv(data, location)
 
