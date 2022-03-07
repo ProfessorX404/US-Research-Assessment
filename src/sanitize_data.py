@@ -61,6 +61,7 @@ def main():
     argument-set instead. Pulls column names on a year-by-year basis
     from Constants.py
     '''
+    # Basic argument handling and reporting back to user for debug purposes.
     origin_path, location, year = sys.argv[1:]
     origin_path = abspath(origin_path)
     location = abspath(location)
@@ -68,11 +69,18 @@ def main():
     print('Data File Path:', origin_path)
     print('Location Path: ', location)
     print('Year: ', year)
+
+    # Reads data from CSV, and then retrieves and aggregates into single list.
     data = pd.read_csv(origin_path, encoding='ISO-8859-1')
     valid_columns = [GENERAL_COLUMNS[year], NASF_COLUMNS[year]]
     valid_columns.extend(FILTER_VALUES[year].keys())
+    # Iterates through keys of FILTER_VALUES and adds all values to
+    # list of valid_columns.
     valid_columns.extend(map(lambda x: FILTER_VALUES[year][x][1:],
                              FILTER_VALUES[year].keys()))
+    # Since FILTER_VALUES is a dictionary of list-of-lists with years as keys,
+    # once the values (list-of-lists) have been added they must then be
+    # unpacked to create a single list of Strings. More info in Constants.py.
     valid_columns = [item for sublist in valid_columns for item in sublist]
     data = data.filter(items=valid_columns)
     data = filter_df(data, 'SUBMISSION_FLAG', 'Y')
