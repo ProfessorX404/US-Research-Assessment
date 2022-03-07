@@ -2,8 +2,15 @@ from pathlib import Path
 import sys
 from os.path import abspath
 import pandas as pd
-#import geopandas as gpd comment this back in when needed
-#import matplotlib.pyplot as plt
+#import geopandas as gpd
+#import matplotlob.pyplot as plt
+
+'''
+call using path to the goal file
+ie   ex:./.env/python.exe ./src/sanitize_data.py \
+        ./data/2019_sanitized.csv
+        --there's probably a better way to do this for multiple files--
+'''
 
 #Goals for this file: carry out bulk of data analysis
 #Might need to split it up eventually but it should be pretty straightforward
@@ -27,7 +34,7 @@ def regional_analysis(data):
     '''
     #group data by state (count all occurances of each)
     counts = data.groupby(by='INST_STATE').count()
-    print(counts.head()) #for testing
+    #print(counts.head()) #for testing
     #apply geodata:
     #shapefile from
     #https://hub.arcgis.com/datasets/CMHS::states-shapefile/explore?location=28.177808%2C-105.995557%2C3.79
@@ -47,6 +54,29 @@ def subject_focus(data):
     among the most institutions, and which subjects are given the most
     square footage among institutions, and compares the two.
     '''
+    col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
+                 'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
+    subj_counts = dict()
+    subj_nasf = dict()
+    # calculates the number of schools represented in each areas
+    for name in col_names:
+        col = None
+        col = str('NASF_' + name)
+        # sorts out numerical data that is nonzero
+        has_space = data[(data[col] != 0) & (data[col] != 'S')]
+        # converts from string and sums space
+        amt_space = pd.to_numeric(has_space[col]).sum()
+        subj_counts[name] = len(has_space[col])
+        subj_nasf[name] = amt_space
+
+    # sorts compiled data from largest to smallest; easy to reorder if needed
+    subj_counts = dict(sorted(subj_counts.items(),
+                       key = lambda item: item[1], reverse=True))
+    subj_nasf = dict(sorted(subj_nasf.items(),
+                     key = lambda item: item[1], reverse=True))
+    print(subj_counts)
+    print(subj_nasf)
+    # still need to plot all this!
 
 
 #step 3: monetary support of instituions
@@ -65,9 +95,15 @@ def amount_of_growth(data):
 
 
 def main():
-    #import data file, convert to dataframe
-    data = pd.read_csv('2019_sanitized.csv') #this won't work, need paths
+    #my path, dropping in so I can call from atom
+    path = './data/2019_sanitized.csv'
+
+    #import data file, convert to dataframe- idk if this works
+    dpath = sys.argv[1:]
+
+    data = pd.read_csv(abspath(path), encoding='ISO-8859-1') #might work
     regional_analysis(data)
+    subject_focus(data)
 
 if __name__ == '__main__':
     main()
