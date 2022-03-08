@@ -9,7 +9,7 @@ More information on specific functions can be found in function headers.
 import sys
 from os.path import abspath
 import pandas as pd
-# import geopandas as gpd
+import geopandas as gpd
 # import matplotlib.pyplot as plt
 
 '''
@@ -120,12 +120,14 @@ def calculate_amount_of_growth(data):
 def main():
     # my path, dropping in so I can call from atom
     path = './data/2019_sanitized.csv'
-
+    geopath = './data/States_shapefile.shp'
     # import data file, convert to dataframe- idk if this works
     dpath = sys.argv[1:]
 
     data = pd.read_csv(abspath(path), encoding='ISO-8859-1')  # might work
-    regional_analysis(data)
+    #states = gpd.read_file('./data/States_shapefile.shp')
+    #print(states.columns)
+    #regional_analysis(data, states)
     subject_focus(data)
     calculate_amount_of_growth(data)
 
