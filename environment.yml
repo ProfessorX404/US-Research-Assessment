@@ -1,4 +1,4 @@
-name: C:\Users\xsegg\Desktop\Github\US-Research-Assessment\.env
+name: .env
 channels:
   - conda-forge
   - defaults
