@@ -1,6 +1,7 @@
 {
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
+    "python.formatting.autopep8Path": ".env\\Scripts\\autopep8.exe",
     "python.formatting.autopep8Args": [
         "--max-line-length",
         "79",
@@ -9,4 +10,5 @@
     "python.condaPath": "C:\\ProgramData\\Miniconda3\\Scripts\\conda.exe",
     "python.defaultInterpreterPath": ".\\.env\\python.exe",
     "python.terminal.activateEnvironment": true,
+    "python.linting.flake8Path": ".\\.env\\Scripts\\flake8.exe"
 }

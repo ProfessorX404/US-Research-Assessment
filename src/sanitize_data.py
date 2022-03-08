@@ -1,9 +1,9 @@
 '''
 Xavier Beech
 CSE163
-Set of methods for sanitizing CSV datasets from public use data files from
-the National Science Foundation's Survey of Science and Engineering Research
-Facilities. Dataset information can be found in
+Sanitizes the National Science Foundation's Survey of
+Science and Engineering Research Facilities.
+Dataset information can be found in
 ./raw_data/2019-faciliities-puf-user-guide.pdf
 '''
 from pathlib import Path
@@ -21,36 +21,6 @@ from Constants import NASF_COLUMNS, GENERAL_COLUMNS, FILTER_VALUES
     ex:./.env/python.exe ./src/sanitize_data.py \
         ./raw_data/facilities_2019_imputed.csv ./data/2019_sanitized.csv 2019
 '''
-
-
-def filter_df(df, filter_title, filter_val='1', valid_columns=None):
-    '''
-    Filters DataFrame for columns where the value at
-    (valid_columns, filter_title) equals filter_val, and returns.
-    If valid_columns equals None, filters for all columns.
-    Note: currently only works for valid_columns == None,
-    if not, returns identical DataFrame. Will remove
-    non-None functionality and revise if not needed
-    by release.
-    '''
-    data = df
-    if valid_columns is None:
-        data = data[data[filter_title] == filter_val]
-    # else:
-    #   for collumn in valid_columns:
-    #       data.loc[data[filter_title] == filter_val, filter_title] = np.nan
-    return data
-
-
-def export_to_csv(df, file_path):
-    '''
-    Exports DataFrame to CSV.
-    Handles non-existent parent diretories and relative paths.
-    '''
-    file_path = Path(file_path)
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(file_path)
-    print('Export Successful!')
 
 
 def main():
@@ -86,19 +56,13 @@ def main():
     # we can finally cut the dataset down to only those columns.
     data = data.filter(items=valid_columns)
     # Filters only for values which have responses. Frankly I'm not sure
-    # why they'd include non-Y answers in the dataset, but we have to filter
-    # for them just in case.
-    data = filter_df(data, 'SUBMISSION_FLAG', 'Y')
-    # Added functionality that is not currently needed (or working).
-    # Will probably be removed for final release. Associated with
-    # RRBOX and on in FILTER_VALUES[2019] (more info in Constants.py)
-    # for val in FILTER_VALUES[year].keys():
-    #     data = filter_df(
-    #         data, val, FILTER_VALUES[year][val][0],
-    #         FILTER_VALUES[year][val][1:])
-    #
+    # why they'd include non-Y answers in the dataset.
+    data = data[data['SUBMISSION_FLAG'] == 'Y'].drop(
+        labels='SUBMISSION_FLAG', axis=1)
     data = data.replace('S', 0)
-    export_to_csv(data, location)
+    Path(location).parent.mkdir(parents=True, exist_ok=True)
+    data.to_csv(location)
+    print('Export Successful!')
 
 
 if __name__ == '__main__':

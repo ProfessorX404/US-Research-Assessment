@@ -3,14 +3,14 @@ Natalie Dean, Xavier Beech
 CSE163
 Set of methods for the analysis of sanitized data from
 the National Science Foundation's Survey of Science and Engineering Research.
-More information on specific functions can be found in function headers. 
+More information on specific functions can be found in function headers.
 '''
-from pathlib import Path
+# from pathlib import Path
 import sys
 from os.path import abspath
 import pandas as pd
-import geopandas as gpd
-import matplotlob.pyplot as plt
+# import geopandas as gpd
+# import matplotlib.pyplot as plt
 
 '''
 call using path to the goal file
@@ -57,16 +57,18 @@ def regional_analysis(data):
 # do max() and min() of subjects and spit those out (print?)
 
 
+col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
+             'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
+
+
 def subject_focus(data):
     '''
-    Outputs informatin on research subjects and the broadness of their
+    Outputs information on research subjects and the broadness of their
     representation in institutions across the country, given the dataset
     for a single year. Examines which research subjects are represented
     among the most institutions, and which subjects are given the most
     square footage among institutions, and compares the two.
     '''
-    col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
-                 'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
     subj_counts = dict()
     subj_nasf = dict()
     # calculates the number of schools represented in each areas
@@ -74,7 +76,7 @@ def subject_focus(data):
         col = None
         col = str('NASF_' + name)
         # sorts out numerical data that is nonzero
-        has_space = data[(data[col] != 0) & (data[col] != 'S')]
+        has_space = data[(data[col] != 0)]
         # converts from string and sums space
         amt_space = pd.to_numeric(has_space[col]).sum()
         subj_counts[name] = len(has_space[col])
@@ -96,13 +98,23 @@ def subject_focus(data):
 # compare the sums of funding sources and occurances of funding sources (as in 2)
 # stretch: look at correlation between institution type and funding source
 # or state and funding source
-def amount_of_growth(data):
+def calculate_amount_of_growth(data):
     '''
     Outputs analysis of growth of research institutions, represented by the
     amounts of funding they receive for R/R and new construction. Sums the
     quantities of funding attained by institution and compares the sources
-    of funding and their contribution.
+    of funding and their contribution. Returns new dataframe with associated
+    columns, to facilitate easier transition to plotting.
     '''
+    RR_EXCEPT_THESE = ['RR_CLIN_TRIAL']
+    NC_LIST = ['NC_FED', 'NC_STA', 'NC_INST', 'NC_TFUND']
+    # data['RR_SUM'] = numpy.np.zeros(data.shape[0] - 1, 1)
+    cols = [str('RR_' + name) for name in col_names
+            if str('RR_' + name) not in RR_EXCEPT_THESE]
+    data['RR_SUM'] = data[cols].sum(axis=1)
+    data['NC_SUM'] = data[NC_LIST].sum(axis=1)
+    data['GROWTH_SUM'] = data[['RR_SUM', 'NC_SUM']].sum(axis=1)
+    return data
 
 
 def main():
@@ -115,6 +127,7 @@ def main():
     data = pd.read_csv(abspath(path), encoding='ISO-8859-1')  # might work
     regional_analysis(data)
     subject_focus(data)
+    calculate_amount_of_growth(data)
 
 
 if __name__ == '__main__':
