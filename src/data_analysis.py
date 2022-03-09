@@ -6,12 +6,14 @@ the National Science Foundation's Survey of Science and Engineering Research.
 More information on specific functions can be found in function headers.
 '''
 # from pathlib import Path
-import sys
+# import sys
 from os.path import abspath
 import pandas as pd
 import geopandas as gpd
 from state_abbrev import abbrev_to_us_state
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+import Constants
 
 '''
 call using path to the goal file
@@ -36,6 +38,10 @@ ie   ex:./.env/python.exe ./src/sanitize_data.py \
 # implement later: potentially compare over time and plot largest changes
 # geodata obtained from:
 # https://github.com/kjhealy/us-county/tree/master/data/geojson
+
+# inelegant solution but just need to get code up and running
+# can add argument intake for this instead at some point
+year = 2019
 
 
 def regional_analysis(data, combined):
@@ -148,32 +154,79 @@ def calculate_amount_of_growth(data):
     of funding and their contribution. Returns new dataframe with associated
     columns, to facilitate easier transition to plotting.
     '''
-    RR_EXCEPT_THESE = ['RR_CLIN_TRIAL']
+    RR_EXCEPT_THESE = ['CLIN_TRIAL']
     NC_LIST = ['NC_FED', 'NC_STA', 'NC_INST', 'NC_TFUND']
+    RETURN_LIST = Constants.GENERAL_COLUMNS[year]
+    RETURN_LIST.extend([
+        'RR_SUM', 'NC_SUM', 'GROWTH_SUM', 'MAX_FUND', 'MIN_FUND',
+        'SINGLE_FUND'])
+    n = 5
     # data['RR_SUM'] = numpy.np.zeros(data.shape[0] - 1, 1)
     cols = [str('RR_' + name) for name in col_names
-            if str('RR_' + name) not in RR_EXCEPT_THESE]
+            if name not in RR_EXCEPT_THESE]
     data['RR_SUM'] = data[cols].sum(axis=1)
     data['NC_SUM'] = data[NC_LIST].sum(axis=1)
     data['GROWTH_SUM'] = data[['RR_SUM', 'NC_SUM']].sum(axis=1)
-    return data
+    data['MAX_FUND'] = data[NC_LIST].idxmax(axis=1, skipna=True)
+    data['MIN_FUND'] = data[NC_LIST].idxmin(axis=1)
+    data['SINGLE_FUND'] = data['MAX_FUND'] == data['MIN_FUND']
+    for n in range(1, n + 1):
+        data[str(n) + '_FUNDED'] =\
+            data[cols].columns[data[cols].values.argsort(1)[:, -n]]
+        # RETURN_LIST.append(str(n) + '_FUNDED')
+    RETURN_LIST.remove("SUBMISSION_FLAG")
+    return data[RETURN_LIST]
+
+# In future we should have 1 optimized map plotting method,
+# and just call it and feed it the data we need.
+# This will drop overhead considerably as well as make
+# our code more readable.
+
+
+def plot_growth(data, combined, title, ax, filename, column):
+    # group data by state (sum growth by each)
+    counts = data.groupby(by='INST_STATE').sum()
+    full_snames = {s: abbrev_to_us_state[s] for s in counts.index}
+    counts.rename(index=full_snames, inplace=True)
+    # merges shapefile with our counts data
+    combined = combined.merge(counts, left_on='NAME', right_on='INST_STATE',
+                              how='right')
+    # filters out outlying territories that'll harm the map scale
+    # filters out dropped vals
+    combined.dropna(axis=0, how="any", inplace=True)
+    # undecided if I want to log normalize the colors, the graph
+    # is kind of hard to look at and isn't super readable.
+    combined.plot(ax=ax, column=column, legend='True',
+                  norm=mpl.colors.LogNorm(
+                      vmin=counts[column].min() + 1,
+                      vmax=counts[column].max()))
+    plt.title(title)
+    plt.savefig(filename)
+    pass
 
 
 def main():
     # my (Natalie's) paths, dropping these in so I can call from atom
     path = './data/2019_sanitized.csv'
     geopath = './data/state_geodata.json'
+
     # import data file, convert to dataframe- idk if this works
     # dpath, gpath = sys.argv[1:] # going unused right now
     data = pd.read_csv(abspath(path), encoding='ISO-8859-1')
 
     # imports geodata and filters out outlying areas
     combined = gpd.read_file(abspath(geopath), encoding='utf-8')
+    combined = combined[(combined['NAME'] != 'Alaska')
+                        & (combined['NAME'] != 'Hawaii')
+                        & (combined['NAME'] != 'Puerto Rico')]
 
     # runs our functions
     regional_analysis(data, combined)
     subject_focus(data)
-    calculate_amount_of_growth(data)
+    plot_growth(
+        calculate_amount_of_growth(data),
+        combined, title='Growth in 2019, by State ($)', ax=plt.subplots(1)[1],
+        filename='state_growth.png', column='GROWTH_SUM')
 
 
 if __name__ == '__main__':
