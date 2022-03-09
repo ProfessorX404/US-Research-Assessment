@@ -10,7 +10,8 @@ import sys
 from os.path import abspath
 import pandas as pd
 import geopandas as gpd
-# import matplotlib.pyplot as plt
+from state_abbrev import abbrev_to_us_state
+import matplotlib.pyplot as plt
 
 '''
 call using path to the goal file
@@ -33,9 +34,10 @@ ie   ex:./.env/python.exe ./src/sanitize_data.py \
 # find a source of geodata and apply it to the dataset
 # apply geopandas to the set to plot by location
 # implement later: potentially compare over time and plot largest changes
+# geodata obtained from:
+# https://github.com/kjhealy/us-county/tree/master/data/geojson
 
-
-def regional_analysis(data):
+def regional_analysis(data, combined):
     '''
     Outputs analysis of research institutions by location, given a dataset in
     the form of a dataframe. Creates a geopandas visualization of occurances of
@@ -43,11 +45,22 @@ def regional_analysis(data):
     '''
     # group data by state (count all occurances of each)
     counts = data.groupby(by='INST_STATE').count()
-    # print(counts.head()) #for testing
-    # apply geodata:
-    # shapefile from
-    # https://hub.arcgis.com/datasets/CMHS::states-shapefile/explore?location=28.177808%2C-105.995557%2C3.79
-    # intent is to test this file once I have geopandas up and running
+    full_snames = {s:abbrev_to_us_state[s] for s in counts.index}
+    counts.rename(index=full_snames, inplace=True)
+    fig, ax = plt.subplots(1)
+
+    # merges shapefile with our counts data
+    combined = combined.merge(counts, left_on='NAME', right_on='INST_STATE',
+                            how='right') # i think this is right
+    # filters out outlying territories that'll harm the map scale
+    combined = combined[(combined['NAME'] != 'Alaska')
+                    & (combined['NAME'] != 'Hawaii')
+                    & (combined['NAME'] != 'Puerto Rico')]
+    combined.dropna(axis=0, how="any", inplace=True) # filters out dropped vals
+    combined.plot(ax=ax,column='Unnamed: 0', legend='True')
+    plt.title("Number of Institutions by State")
+    plt.savefig("state_insts.png")
+
 
 # step 2: research subject focus
 # group by research areas
@@ -87,9 +100,36 @@ def subject_focus(data):
                        key=lambda item: item[1], reverse=True))
     subj_nasf = dict(sorted(subj_nasf.items(),
                      key=lambda item: item[1], reverse=True))
-    print(subj_counts)
-    print(subj_nasf)
-    # still need to plot all this!
+
+    # turns results into lists for quick access
+    s_count = list(subj_counts.values())
+    s_count_key = list(subj_counts.keys())
+    s_nasf = list(subj_nasf.values())
+    s_nasf_key = list(subj_nasf.keys())
+
+
+    fig, [ax2, ax3] = plt.subplots(2)
+    fig2, [ax4, ax5] = plt.subplots(2)
+    # plot top half of data
+    ax2.bar(s_count_key[0:7], s_count[0:7],
+            width=1, edgecolor="white", linewidth=0.7)
+    ax2.set_ylabel("Number of institutions")
+    ax3.bar(s_nasf_key[0:7], s_nasf[0:7],
+            width=1, edgecolor="white", linewidth=0.7)
+    ax3.set_ylabel("Total square footage")
+    #plt.title("Total Square Footage Per Subject")
+    fig.suptitle("Upper Half of Represented Subjects")
+    fig.savefig("high_subjects.png")
+
+    # plot top half of data
+    ax4.bar(s_count_key[7:14], s_count[7:14],
+            width=1, edgecolor="white", linewidth=0.7)
+    ax4.set_ylabel("Number of institutions")
+    ax5.bar(s_nasf_key[7:14], s_nasf[7:14],
+            width=1, edgecolor="white", linewidth=0.7)
+    ax5.set_ylabel("Total square footage")
+    fig2.suptitle("Lower Half of Represented Subjects")
+    fig2.savefig("low_subjects.png")
 
 
 # step 3: monetary support of instituions
@@ -118,16 +158,19 @@ def calculate_amount_of_growth(data):
 
 
 def main():
-    # my path, dropping in so I can call from atom
+    # my (Natalie's) paths, dropping these in so I can call from atom
     path = './data/2019_sanitized.csv'
-    geopath = './data/States_shapefile.shp'
-    # import data file, convert to dataframe- idk if this works
-    dpath = sys.argv[1:]
+    geopath = './data/state_geodata.json'
 
-    data = pd.read_csv(abspath(path), encoding='ISO-8859-1')  # might work
-    #states = gpd.read_file('./data/States_shapefile.shp')
-    #print(states.columns)
-    #regional_analysis(data, states)
+    # import data file, convert to dataframe- idk if this works
+    # dpath, gpath = sys.argv[1:] # going unused right now
+    data = pd.read_csv(abspath(path), encoding='ISO-8859-1')
+
+    # imports geodata and filters out outlying areas
+    combined = gpd.read_file(abspath(geopath), encoding='utf-8')
+
+    # runs our functions
+    regional_analysis(data, combined)
     subject_focus(data)
     calculate_amount_of_growth(data)
 
