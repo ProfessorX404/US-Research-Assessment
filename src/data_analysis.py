@@ -126,7 +126,7 @@ def main():
 
     data = pd.read_csv(abspath(path), encoding='ISO-8859-1')  # might work
     #states = gpd.read_file('./data/States_shapefile.shp')
-    #print(states.columns)
+    # print(states.columns)
     #regional_analysis(data, states)
     subject_focus(data)
     calculate_amount_of_growth(data)

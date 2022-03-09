@@ -7,8 +7,8 @@
         "79",
         "--experimental"
     ],
-    "python.condaPath": "C:\\ProgramData\\Miniconda3\\Scripts\\conda.exe",
     "python.defaultInterpreterPath": ".\\.env\\python.exe",
     "python.terminal.activateEnvironment": true,
-    "python.linting.flake8Path": ".\\.env\\Scripts\\flake8.exe"
+    "python.terminal.environmentPath": ".\\.env",
+    "python.linting.flake8Path": ".\\.env\\Scripts\\flake8.exe",
 }
