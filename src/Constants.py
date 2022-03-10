@@ -9,6 +9,10 @@ NASF_COLUMNS = {2019: [  # The collumn names per year that have to do with NASF
 # Usually has to do with the institution itself.
 GENERAL_COLUMNS = {2019: [
     'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
+    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2018'], 2017: [
+    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
+    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2018'], 2015: [
+    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
     'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2018']}
 
 # This was originally going to be for the insertion of NaN into the dataset

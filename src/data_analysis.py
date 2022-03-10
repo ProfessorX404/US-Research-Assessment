@@ -5,9 +5,11 @@ Set of methods for the analysis of sanitized data from
 the National Science Foundation's Survey of Science and Engineering Research.
 More information on specific functions can be found in function headers.
 '''
+from cmath import log
 from pathlib import Path
 # import sys
 from os.path import abspath
+import numpy
 import pandas as pd
 import geopandas as gpd
 from state_abbrev import abbrev_to_us_state
@@ -45,6 +47,7 @@ year = 2019
 path = './data/2019_sanitized.csv'
 geopath = './data/state_geodata.json'
 pics_dir = './plots/'
+DROP_STATES = ['Alaska', 'Hawaii', 'Puerto Rico']
 
 
 # step 2: research subject focus
@@ -158,8 +161,9 @@ def calculate_amount_of_growth(data):
 
 def plot_map(
         data, geo, column, func=None, ax=None, log_norm: bool = False,
-        legend='True', groupby='INST_STATE', geo_merge='NAME', how='right',
-        dropna: bool = True, categorical: bool = False):
+        legend='True', legend_kwds=None, groupby='INST_STATE',
+        geo_merge='NAME', how='right', dropna: bool = True,
+        categorical: bool = False, scale=1):
     if ax is None:
         plt.clf()
         ax = plt.subplots(1)[1]
@@ -176,33 +180,26 @@ def plot_map(
     # merges shapefile with our counts data
     full_snames = {s: abbrev_to_us_state[s] for s in data.index}
     data = data.rename(index=full_snames)
-    groupby=data.index
+    groupby = data.index
     geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
                     how=how)
     # filters out outlying territories that'll harm the map scale
     # filters out dropped vals
     if dropna:
         geo = geo.dropna(axis=0, how='any')
-    # undecided if I want to log normalize the colors, the graph
-    # is kind of hard to look at and isn't super readable.
+    if scale != 1:
+        data[column] = data[column] * scale
     if log_norm:
-        print('here1')
-        geo.plot(ax=ax, column=column, legend=legend,
+        geo.plot(ax=ax, column=column, legend=legend, legend_kwds=legend_kwds,
                  norm=mpl.colors.LogNorm(
                      vmin=geo[column].min() + 1,
                      vmax=geo[column].max()))
     elif categorical:
-        # This is where I'm seeing the error about trying to plot the empty
-        # dataframe. However I think the actual issue is up above at 179.
-        # The only categorical data we're graphing currently is line 246,
-        # about the largest funding source by state.
-        print('here2')
-        geo.to_csv(r'plzwork.csv')
-        print(geo)
-        geo.plot(ax=ax, column=column, legend=legend, categorical=categorical)
+        geo.plot(ax=ax, column=column, legend=legend,
+                 categorical=categorical, legend_kwds=legend_kwds)
     else:
-        print('here3')
-        geo.plot(ax=ax, column=column, legend=legend)
+        geo.plot(ax=ax, column=column, legend=legend, legend_kwds=legend_kwds)
+    return ax
 
 
 def save_fig(title, dir=None, filename=None, abs=None):
@@ -223,9 +220,7 @@ def main():
 
     # imports geodata and filters out outlying areas
     combined = gpd.read_file(abspath(geopath), encoding='utf-8')
-    combined = combined[(combined['NAME'] != 'Alaska')
-                        & (combined['NAME'] != 'Hawaii')
-                        & (combined['NAME'] != 'Puerto Rico')]
+    combined = combined[~combined['NAME'].isin(DROP_STATES)]
 
     # runs our functions
 
@@ -239,13 +234,15 @@ def main():
     # Maps investment in growth by state.
     growth_data = calculate_amount_of_growth(data)
     # Plots investment in growth by state
-    plot_map(growth_data, combined, func='sum',
-             column='GROWTH_SUM', log_norm=True)
-    save_fig('Growth in 2019, by State($)',
+    ax_growth = plot_map(
+        growth_data, combined, func='sum', column='EXP_TOT_2018',
+        log_norm=True)
+    save_fig('R&D Expenditures in 2018, by State ($)',
              dir=pics_dir, filename='state_growth.png')
     # Plots primary funding source for growth in each state
-    plot_map(growth_data, combined, column='MAX_FUND',
-             categorical=True)
+    plot_map(
+        growth_data, combined, column='MAX_FUND', categorical=True,
+        legend_kwds={'loc': 'lower right', 'fontsize': 'small'})
     save_fig('Primary Funding Source by State',
              dir=pics_dir, filename='state_funding.png')
 
