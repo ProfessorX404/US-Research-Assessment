@@ -173,9 +173,10 @@ def plot_map(
     else:
         print('Invalid func: ', str(func))
         return None
+    # merges shapefile with our counts data
     full_snames = {s: abbrev_to_us_state[s] for s in data.index}
     data = data.rename(index=full_snames)
-    # merges shapefile with our counts data
+    groupby=data.index
     geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
                     how=how)
     # filters out outlying territories that'll harm the map scale
