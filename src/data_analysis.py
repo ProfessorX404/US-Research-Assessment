@@ -5,7 +5,7 @@ Set of methods for the analysis of sanitized data from
 the National Science Foundation's Survey of Science and Engineering Research.
 More information on specific functions can be found in function headers.
 '''
-# from pathlib import Path
+from pathlib import Path
 # import sys
 from os.path import abspath
 import pandas as pd
@@ -42,32 +42,9 @@ ie   ex:./.env/python.exe ./src/sanitize_data.py \
 # inelegant solution but just need to get code up and running
 # can add argument intake for this instead at some point
 year = 2019
-
-
-def regional_analysis(data, combined):
-    '''
-    Outputs analysis of research institutions by location, given a dataset in
-    the form of a dataframe. Creates a geopandas visualization of occurances of
-    schools by state.
-    '''
-    # group data by state (count all occurances of each)
-    counts = data.groupby(by='INST_STATE').count()
-    full_snames = {s: abbrev_to_us_state[s] for s in counts.index}
-    counts.rename(index=full_snames, inplace=True)
-    fig, ax = plt.subplots(1)
-
-    # merges shapefile with our counts data
-    combined = combined.merge(counts, left_on='NAME', right_on='INST_STATE',
-                              how='right')  # i think this is right
-    # filters out outlying territories that'll harm the map scale
-    combined = combined[(combined['NAME'] != 'Alaska')
-                        & (combined['NAME'] != 'Hawaii')
-                        & (combined['NAME'] != 'Puerto Rico')]
-    # filters out dropped vals
-    combined.dropna(axis=0, how="any", inplace=True)
-    combined.plot(ax=ax, column='Unnamed: 0', legend='True')
-    plt.title("Number of Institutions by State")
-    plt.savefig("state_insts.png")
+path = './data/2019_sanitized.csv'
+geopath = './data/state_geodata.json'
+pics_dir = './plots/'
 
 
 # step 2: research subject focus
@@ -126,7 +103,7 @@ def subject_focus(data):
     ax3.set_ylabel("Total square footage")
     #  plt.title("Total Square Footage Per Subject")
     fig.suptitle("Upper Half of Represented Subjects")
-    fig.savefig("high_subjects.png")
+    fig.savefig(pics_dir + "high_subjects.png")
 
     # plot top half of data
     ax4.bar(s_count_key[7:14], s_count[7:14],
@@ -136,7 +113,7 @@ def subject_focus(data):
             width=1, edgecolor="white", linewidth=0.7)
     ax5.set_ylabel("Total square footage")
     fig2.suptitle("Lower Half of Represented Subjects")
-    fig2.savefig("low_subjects.png")
+    fig2.savefig(pics_dir + "low_subjects.png")
 
 
 # step 3: monetary support of instituions
@@ -175,40 +152,65 @@ def calculate_amount_of_growth(data):
             data[cols].columns[data[cols].values.argsort(1)[:, -n]]
         # RETURN_LIST.append(str(n) + '_FUNDED')
     RETURN_LIST.remove("SUBMISSION_FLAG")
+    data = data.rename(index=data['INST_STATE'])
     return data[RETURN_LIST]
 
-# In future we should have 1 optimized map plotting method,
-# and just call it and feed it the data we need.
-# This will drop overhead considerably as well as make
-# our code more readable.
 
-
-def plot_growth(data, combined, title, ax, filename, column):
-    # group data by state (sum growth by each)
-    counts = data.groupby(by='INST_STATE').sum()
-    full_snames = {s: abbrev_to_us_state[s] for s in counts.index}
-    counts.rename(index=full_snames, inplace=True)
+def plot_map(
+        data, geo, column, func=None, ax=None, log_norm: bool = False,
+        legend='True', groupby='INST_STATE', geo_merge='NAME', how='right',
+        dropna: bool = True, categorical: bool = False):
+    if ax is None:
+        plt.clf()
+        ax = plt.subplots(1)[1]
+    # group data by state (add func cases as needed)
+    if func == 'sum':
+        data = data.groupby(by=groupby).sum()
+    elif func == 'count':
+        data = data.groupby(by=groupby).count()
+    elif func is None:
+        categorical = True
+    else:
+        print('Invalid func: ', str(func))
+        return None
+    full_snames = {s: abbrev_to_us_state[s] for s in data.index}
+    data = data.rename(index=full_snames)
     # merges shapefile with our counts data
-    combined = combined.merge(counts, left_on='NAME', right_on='INST_STATE',
-                              how='right')
+    geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
+                    how=how)
     # filters out outlying territories that'll harm the map scale
     # filters out dropped vals
-    combined.dropna(axis=0, how="any", inplace=True)
+    if dropna:
+        geo = geo.dropna(axis=0, how='any')
     # undecided if I want to log normalize the colors, the graph
     # is kind of hard to look at and isn't super readable.
-    combined.plot(ax=ax, column=column, legend='True',
-                  norm=mpl.colors.LogNorm(
-                      vmin=counts[column].min() + 1,
-                      vmax=counts[column].max()))
+    if log_norm:
+        print('here1')
+        geo.plot(ax=ax, column=column, legend=legend,
+                 norm=mpl.colors.LogNorm(
+                     vmin=geo[column].min() + 1,
+                     vmax=geo[column].max()))
+    elif categorical:
+        print('here2')
+        geo.to_csv(r'plzwork.csv')
+        print(geo)
+        geo.plot(ax=ax, column=column, legend=legend, categorical=categorical)
+    else:
+        print('here3')
+        geo.plot(ax=ax, column=column, legend=legend)
+
+
+def save_fig(title, dir=None, filename=None, abs=None):
     plt.title(title)
-    plt.savefig(filename)
-    pass
+    if abs is None:
+        Path(abspath(dir + filename)).parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(abspath(dir + filename))
+    else:
+        Path(abs).parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(abs)
 
 
 def main():
-    # my (Natalie's) paths, dropping these in so I can call from atom
-    path = './data/2019_sanitized.csv'
-    geopath = './data/state_geodata.json'
 
     # import data file, convert to dataframe- idk if this works
     # dpath, gpath = sys.argv[1:] # going unused right now
@@ -221,12 +223,26 @@ def main():
                         & (combined['NAME'] != 'Puerto Rico')]
 
     # runs our functions
-    regional_analysis(data, combined)
+
+    # Maps amount of research institutions by state.
+    plot_map(
+        data, combined, func='count', column='Unnamed: 0')
+    save_fig('Number of Institutions by State',
+             dir=pics_dir, filename='state_insts.png')
+    # Plots top and bottom 7 areas by number of institutions and sq. footage.
     subject_focus(data)
-    plot_growth(
-        calculate_amount_of_growth(data),
-        combined, title='Growth in 2019, by State ($)', ax=plt.subplots(1)[1],
-        filename='state_growth.png', column='GROWTH_SUM')
+    # Maps investment in growth by state.
+    growth_data = calculate_amount_of_growth(data)
+    # Plots investment in growth by state
+    plot_map(growth_data, combined, func='sum',
+             column='GROWTH_SUM', log_norm=True)
+    save_fig('Growth in 2019, by State($)',
+             dir=pics_dir, filename='state_growth.png')
+    # Plots primary funding source for growth in each state
+    plot_map(growth_data, combined, column='MAX_FUND',
+             categorical=True)
+    save_fig('Primary Funding Source by State',
+             dir=pics_dir, filename='state_funding.png')
 
 
 if __name__ == '__main__':
