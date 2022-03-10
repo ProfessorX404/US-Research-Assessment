@@ -191,6 +191,10 @@ def plot_map(
                      vmin=geo[column].min() + 1,
                      vmax=geo[column].max()))
     elif categorical:
+        # This is where I'm seeing the error about trying to plot the empty
+        # dataframe. However I think the actual issue is up above at 179.
+        # The only categorical data we're graphing currently is line 246,
+        # about the largest funding source by state.
         print('here2')
         geo.to_csv(r'plzwork.csv')
         print(geo)
