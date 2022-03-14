@@ -16,6 +16,7 @@ from state_abbrev import abbrev_to_us_state
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import Constants
+from collections import defaultdict
 
 '''
 call using path to the goal file
@@ -32,23 +33,21 @@ ie   ex:./.env/python.exe ./src/sanitize_data.py \
 #  import data file
 # convert to dataframe
 # group data by state
-# sort by year (not our problem yet; would probably need to be handled outside
-# of this function with some sort of return infrastructure/combining into
 # a new dataframe together) <-second might work better
 # find a source of geodata and apply it to the dataset
 # apply geopandas to the set to plot by location
-# implement later: potentially compare over time and plot largest changes
 # geodata obtained from:
 # https://github.com/kjhealy/us-county/tree/master/data/geojson
 
 # inelegant solution but just need to get code up and running
 # can add argument intake for this instead at some point
 year = 2019
-path = './data/2019_sanitized.csv'
+path = './data/2015-2019_sanitized.csv'
 geopath = './data/state_geodata.json'
 pics_dir = './plots/'
 DROP_STATES = ['Alaska', 'Hawaii', 'Puerto Rico']
-
+col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
+             'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
 
 # step 2: research subject focus
 # group by research areas
@@ -56,13 +55,7 @@ DROP_STATES = ['Alaska', 'Hawaii', 'Puerto Rico']
 # Plot or print list of areas with most institutions, and list of areas
 # with most square footage in institutions
 # do max() and min() of subjects and spit those out (print?)
-
-
-col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
-             'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
-
-
-def subject_focus(data):
+def subject_focus(data, to_plot=False):
     '''
     Outputs information on research subjects and the broadness of their
     representation in institutions across the country, given the dataset
@@ -83,17 +76,29 @@ def subject_focus(data):
         subj_counts[name] = len(has_space[col])
         subj_nasf[name] = amt_space
 
-    # sorts compiled data from largest to smallest; easy to reorder if needed
-    subj_counts = dict(sorted(subj_counts.items(),
+    if to_plot:
+        plot_focus(subj_counts, subj_nasf)
+    return [subj_counts, subj_nasf]
+
+
+def plot_focus(counts, nasf):
+    '''
+    Helper function for subject_focus. Plots the results of analyis from the
+    function on two separate plots, one for the most represented subjects and
+    one for  the least represented subjects. Takes in two dictionaries
+    of the counts of occurances and the numbers of allocated square footage.
+    '''
+    # sorts compiled data from largest to smallest
+    counts = dict(sorted(counts.items(),
                        key=lambda item: item[1], reverse=True))
-    subj_nasf = dict(sorted(subj_nasf.items(),
+    nasf = dict(sorted(nasf.items(),
                      key=lambda item: item[1], reverse=True))
 
     # turns results into lists for quick access
-    s_count = list(subj_counts.values())
-    s_count_key = list(subj_counts.keys())
-    s_nasf = list(subj_nasf.values())
-    s_nasf_key = list(subj_nasf.keys())
+    s_count = list(counts.values())
+    s_count_key = list(counts.keys())
+    s_nasf = list(nasf.values())
+    s_nasf_key = list(nasf.keys())
 
     fig, [ax2, ax3] = plt.subplots(2)
     fig2, [ax4, ax5] = plt.subplots(2)
@@ -117,7 +122,6 @@ def subject_focus(data):
     ax5.set_ylabel("Total square footage")
     fig2.suptitle("Lower Half of Represented Subjects")
     fig2.savefig(pics_dir + "low_subjects.png")
-
 
 # step 3: monetary support of instituions
 # sum amounts of R/R and new construction per institution
@@ -159,11 +163,81 @@ def calculate_amount_of_growth(data):
     return data[RETURN_LIST]
 
 
+# create a bar graph with largest changes in numbers of institutions by state?
+# plot of subject areas' number of occurances over time
+# and/or square footage amounts over time
+def multi_plot(data):
+    '''
+    Plots the components of the above function involving analysis over multiple
+    years of data. Takes in a dataframe including all years of data from
+    2009-2019. Specifically,<tasks go here>
+    '''
+    years = [2017, 2019] #update when new ones added
+
+    # Question 1:
+    # create bar graph in largest changes of number of insts. per state
+    # I didn't use plotmap but might be possible to do so idk
+    # subtract state groupbys from one another- gives new column of diff.s
+    # per state
+    # sort and then plot the top 10(?)
+    grouped = data.groupby(by=['INST_STATE', 'YEAR']).count()
+    print(grouped)
+    # now grouped into state and then year
+    # grab values and subtract last from first then plot it
+
+    # Question 2:
+    # Collect our counts and NASFs by area by year, then convert into a dict.
+    # of lists of these for plotting
+    #[cts_2015, nasf_2015] = subject_focus(data[data['YEAR']==2015])
+    [cts_2017, nasf_2017] = subject_focus(data[data['YEAR']==2017])
+    [cts_2019, nasf_2019] = subject_focus(data[data['YEAR']==2019])
+
+    # asssemble datasets for line graph plotting
+    # i think there may be a way to do this in a nested loop but we'd need to
+    # put the dictionaries in another data structure for that
+    # but this should work for now
+    all_cts = defaultdict(list)
+    all_nasf = defaultdict(list)
+    for name in col_names:
+        all_cts[name].append(cts_2017[name])
+        all_cts[name].append(cts_2019[name])
+
+        all_nasf[name].append(nasf_2017[name])
+        all_nasf[name].append(nasf_2019[name])
+
+    s_count = list(all_cts.values())
+    s_nasf = list(all_nasf.values())
+    fig, [ax, ax2] = plt.subplots(2)
+    i = 0
+    for name in col_names:
+        ax.plot(years, s_count[i], label=name)
+        ax2.plot(years, s_nasf[i], label=name)
+        i+=1
+    fig.savefig(pics_dir + "subj_trends.png")
+    # still needs title, legend, possibly adjust formatting; xaxis is screwed up
+    print('not done!')
+
+    # Question 3:
+    # I dont know if we had temporal analyis planned for this but
+    # if you want to add something for it go ahead
+
+# think we should make this one private
 def plot_map(
         data, geo, column, func=None, ax=None, log_norm: bool = False,
         legend='True', legend_kwds=None, groupby='INST_STATE',
         geo_merge='NAME', how='right', dropna: bool = True,
         categorical: bool = False, scale=1):
+    '''
+    A multipurpose helper function that plots or maps a given dataset based on
+    the indicated inputs. Data is the dataframe, geo is incoming geodata, func
+    may be either 'sum' or 'count' (indicating what type of groupby to use)
+    and if func is not defined it is instead assumed categorical analysis will
+    be performed. An axis may also be passed in for multiple plots on the
+    same axis, and parameters may be used to define presence or absence of
+    a legend, legend keywords, what to group by and merge, which side to merge
+    by, and whether to drop NaN values.
+    Returns the figure on which the plot has been assembled.
+    '''
     if ax is None:
         plt.clf()
         ax = plt.subplots(1)[1]
@@ -183,7 +257,6 @@ def plot_map(
     groupby = data.index
     geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
                     how=how)
-    # filters out outlying territories that'll harm the map scale
     # filters out dropped vals
     if dropna:
         geo = geo.dropna(axis=0, how='any')
@@ -201,8 +274,13 @@ def plot_map(
         geo.plot(ax=ax, column=column, legend=legend, legend_kwds=legend_kwds)
     return ax
 
-
+# make this one private as well
 def save_fig(title, dir=None, filename=None, abs=None):
+    '''
+    Saves the resulting plot from data analysis to a new file. Values passed in
+    are the figure title, the directory name, the file name, and an absolute
+    path. If the absolute path is not passed in, one will be created.
+    '''
     plt.title(title)
     if abs is None:
         Path(abspath(dir + filename)).parent.mkdir(parents=True, exist_ok=True)
@@ -224,16 +302,20 @@ def main():
 
     # runs our functions
 
-    # Maps amount of research institutions by state.
+    # Extracts specific datasets for years, as needed
+    d2019 = data.copy(deep=True) # copies dataframe so Pandas doesn't get mad
+    d2019 = d2019[d2019['YEAR']==2019] #filters for only target year
+
+    # Maps amount of research institutions by state. for 2019
     plot_map(
-        data, combined, func='count', column='Unnamed: 0')
+        d2019, combined, func='count', column='Unnamed: 0')
     save_fig('Number of Institutions by State',
              dir=pics_dir, filename='state_insts.png')
-    # Plots top and bottom 7 areas by number of institutions and sq. footage.
-    subject_focus(data)
-    # Maps investment in growth by state.
-    growth_data = calculate_amount_of_growth(data)
-    # Plots investment in growth by state
+    # Plots top and bottom 7 areas by number of institutions and sq. footage
+    subject_focus(d2019, True)
+    # Maps investment in growth by state for 2019
+    growth_data = calculate_amount_of_growth(d2019)
+    # Plots investment in growth by state for 2019
     plot_map(
         growth_data, combined, func='sum', column='EXP_TOT_2018',
         log_norm=True)
@@ -245,6 +327,7 @@ def main():
         legend_kwds={'loc': 'lower right', 'fontsize': 'small'})
     save_fig('Primary Funding Source by State',
              dir=pics_dir, filename='state_funding.png')
+    multi_plot(data)
 
 
 if __name__ == '__main__':
