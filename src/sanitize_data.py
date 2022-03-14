@@ -9,15 +9,19 @@ Dataset information can be found in
 from pathlib import Path
 import sys
 import pandas as pd
-from Constants import NASF_COLUMNS, GENERAL_COLUMNS, FILTER_VALUES
+from Constants import get_NASF, GENERAL_COLUMNS, FILTER_VALUES
 
 
 ''' call using this syntax in terminal:
     [python executable] [path of sanitize_data.py] \
-        [path of desired CSV to sanitize] [year]\
-            [path of desired location and name of CSV]
+        [raw_data path] \
+            [data directory path] [year(s)*]
     ex:./.env/python.exe ./src/sanitize_data.py \
-        ./raw_data/facilities_2019_imputed.csv ./data/2019_sanitized.csv 2019
+        ./raw_data/ ./data/ '2015:2019'
+    *possible year formats:
+        -Single year: 2019, '2019'
+        -Multiple years: [2015, 2017, 2019], ['2015', '2017', '2019'],
+                         '2015:2019'
 '''
 
 
@@ -71,7 +75,7 @@ def main():
         data[year] = pd.read_csv(
             str(origin_path + 'facilities_' + str(year) + '.csv'),
             encoding='ISO-8859-1')
-        valid_columns = [GENERAL_COLUMNS[year], NASF_COLUMNS[year]]
+        valid_columns = [GENERAL_COLUMNS[year], get_NASF(year)]
         valid_columns.extend(FILTER_VALUES[year].keys())
         # Iterates through keys of
         # FILTER_VALUES and adds all values to

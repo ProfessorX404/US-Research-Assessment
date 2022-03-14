@@ -135,7 +135,7 @@ def calculate_amount_of_growth(data):
     columns, to facilitate easier transition to plotting.
     '''
     RR_EXCEPT_THESE = ['CLIN_TRIAL']
-    NC_LIST = ['NC_FED', 'NC_STA', 'NC_INST', 'NC_TFUND']
+    NC_LIST = ['NC_FED', 'NC_STA', 'NC_INST']
     RETURN_LIST = Constants.GENERAL_COLUMNS[year]
     RETURN_LIST.extend([
         'RR_SUM', 'NC_SUM', 'GROWTH_SUM', 'MAX_FUND', 'MIN_FUND',

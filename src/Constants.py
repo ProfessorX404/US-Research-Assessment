@@ -1,17 +1,38 @@
 # The goal is to make the data easier to standarize by having each set of
 # collumns available under the 'category' and year the set applies to.
-NASF_COLUMNS = {2019: [  # The collumn names per year that have to do with NASF
-    'NASF_AG', 'NASF_BIO', 'NASF_COS', 'NASF_ENG', 'NASF_GEO', 'NASF_HLTH',
-    'NASF_MATH', 'NASF_NR', 'NASF_PHY', 'NASF_PSY', 'NASF_SOC', 'NASF_OTH',
-    # The collumn names per year that have to do with NASF
-    'NASF_CLIN_TRIAL', 'NASF_MED'], 2017: [
-    'NASF_AG', 'NASF_BIO', 'NASF_COS', 'NASF_ENG', 'NASF_GEO', 'NASF_HLTH',
-    'NASF_MATH', 'NASF_NR', 'NASF_PHY', 'NASF_PSY', 'NASF_SOC', 'NASF_OTH',
-    # The collumn names per year that have to do with NASF
-    'NASF_CLIN_TRIAL', 'NASF_MED'], 2015: [
-    'NASF_AG', 'NASF_BIO', 'NASF_COS', 'NASF_ENG', 'NASF_GEO', 'NASF_HLTH',
-    'NASF_MATH', 'NASF_NR', 'NASF_PHY', 'NASF_PSY', 'NASF_SOC', 'NASF_OTH',
-    'NASF_CLIN_TRIAL', 'NASF_MED']}
+
+NASF_SUBJECT_LIST = {2007: ['AGR', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH',
+                            'MATH', 'NR', 'PHY1', 'PHY2', 'PSY', 'SOC', 'OTH',
+                            'CLIN_TRIAL', 'MED'],
+                     2011: ['AGR', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH',
+                            'MATH', 'PHY1', 'PHY2', 'PSY', 'SOC', 'OTH',
+                            'CLIN_TRIAL', 'MED'],
+                     2015: ['AG', 'BIO', 'COS', 'ENG',
+                            'HLTH', 'MATH', 'NR', 'GEO', 'PHY', 'PSY', 'SOC',
+                            'OTH', 'CLIN_TRIAL', 'MED']
+                     }
+NASF_PREFIXES = {2017: 'NASF_', 2015: 'Q2_', 2007: 'P1Q2'}
+
+
+def get_NASF(year):
+    prefix = NASF_PREFIXES[max(
+        [x for x in NASF_PREFIXES.keys() if x <= year])]
+    subjects = NASF_SUBJECT_LIST[max(
+        [x for x in NASF_SUBJECT_LIST.keys() if x <= year])]
+    return [prefix + x for x in subjects]
+
+
+RR_SUBJECT_LIST = {2015: ['AG', 'BIO', 'COS', 'ENG',
+                          'HLTH', 'MATH', 'NR', 'GEO', 'PHY', 'PSY', 'SOC',
+                          'OTH', 'CLIN_TRIAL', 'MED'],
+                   2011: ['AGR', 'BIO', 'COS', 'ENG', 'HLTH', 'MATH', 'PHY1',
+                   'PHY2', 'PSY', 'SOC', 'OTH']
+                   }
+
+# annoyingly P1Q8 is the equivalent of RR_MED,
+# so I'll have to add a special case in the translation function
+
+RR_PREFIXES = {2017: 'RR_', 2015: 'Q7', 2011: 'P1Q7', 2007: 'P1Q9'}
 
 # General but neccessary collumns.
 # Usually has to do with the institution itself.
@@ -21,7 +42,22 @@ GENERAL_COLUMNS = {2019: [
     'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
     'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2016'], 2015: [
     'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
-    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2014']}
+    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2014'], 2013: [
+    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
+    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2012'], 2011: [
+    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
+    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2010'], 2009: [
+    'YEAR', 'INST_ID', 'INST_NAME', 'submission_flag', 'inst_type',
+    'inst_state', 'toc_code', 'exp_tot_2008'], 2007: [
+    'YEAR', 'INST_ID', 'INST_NAME', 'submission_flag', 'inst_type',
+    'inst_state', 'toc_code', 'exp_tot_2006']
+}
+
+
+def get_general(year):
+    return GENERAL_COLUMNS[max([x for x in GENERAL_COLUMNS.keys()
+                                if x <= year])]
+
 
 # This was originally going to be for the insertion of NaN into the dataset
 # per row, but that ended up not being neccessary. Currently the only used
