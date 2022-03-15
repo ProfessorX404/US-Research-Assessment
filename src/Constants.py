@@ -1,132 +1,120 @@
 # The goal is to make the data easier to standarize by having each set of
 # collumns available under the 'category' and year the set applies to.
 
-NASF_SUBJECT_LIST = {2007: ['AGR', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH',
-                            'MATH', 'NR', 'PHY1', 'PHY2', 'PSY', 'SOC', 'OTH',
-                            'CLIN_TRIAL', 'MED'],
-                     2011: ['AGR', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH',
-                            'MATH', 'PHY1', 'PHY2', 'PSY', 'SOC', 'OTH',
-                            'CLIN_TRIAL', 'MED'],
-                     2015: ['AG', 'BIO', 'COS', 'ENG',
-                            'HLTH', 'MATH', 'NR', 'GEO', 'PHY', 'PSY', 'SOC',
-                            'OTH', 'CLIN_TRIAL', 'MED']
-                     }
-NASF_PREFIXES = {2017: 'NASF_', 2015: 'Q2_', 2007: 'P1Q2'}
+_CHANGE_LIST = {2019: {'YEAR': 'YEAR', 'INST_ID': 'INST_ID',
+                       'INST_NAME': 'INST_NAME',
+                       'SUBMISSION_FLAG': 'SUBMISSION_FLAG',
+                       'INST_STATE': 'INST_STATE', 'TOC_CODE': 'TOC_CODE',
+                       'EXP_TOT': 'EXP_TOT_2018',
+                       'NASF_AG': 'NASF_AG', 'NASF_BIO': 'NASF_BIO',
+                       'NASF_COS': 'NASF_COS', 'NASF_ENG': 'NASF_ENG',
+                       'NASF_HLTH': 'NASF_HLTH', 'NASF_MATH': 'NASF_MATH',
+                       'NASF_NR': 'NASF_NR', 'NASF_GEO': 'NASF_GEO',
+                       'NASF_PHY': 'NASF_PHY', 'NASF_PSY': 'NASF_PSY',
+                       'NASF_SOC': 'NASF_SOC',
+                       'NASF_CLIN_TRIAL': 'NASF_CLIN_TRIAL',
+                       'NASF_OTH': 'NASF_OTH', 'NASF_MED': 'NASF_MED',
+                       'RR_AG': 'RR_AG', 'RR_BIO': 'RR_BIO',
+                       'RR_COS': 'RR_COS', 'RR_ENG': 'RR_ENG',
+                       'RR_HLTH': 'RR_HLTH', 'RR_MATH': 'RR_MATH',
+                       'RR_NR': 'RR_NR', 'RR_GEO': 'RR_GEO',
+                       'RR_PHY': 'RR_PHY', 'RR_PSY': 'RR_PSY',
+                       'RR_SOC': 'RR_SOC', 'RR_OTH': 'RR_OTH',
+                       'RR_MED': 'RR_MED'},
+                2017: {'EXP_TOT': 'EXP_TOT_2016'},
+                2015: {'EXP_TOT': 'EXP_TOT_2014',
+                       'NASF_AG': 'Q2AG', 'NASF_BIO': 'Q2BIO',
+                       'NASF_COS': 'Q2COS', 'NASF_ENG': 'Q2ENG',
+                       'NASF_HLTH': 'Q2HLTH', 'NASF_MATH': 'Q2MATH',
+                       'NASF_NR': 'Q2NR', 'NASF_GEO': 'Q2GEO',
+                       'NASF_PHY': 'Q2PHY', 'NASF_PSY': 'Q2PSY',
+                       'NASF_SOC': 'Q2SOC', 'NASF_CLIN_TRIAL': None,
+                       'NASF_OTH': 'Q2OTH', 'NASF_MED': 'Q5',
+                       'RR_AG': 'Q7AG', 'RR_BIO': 'Q7BIO',
+                       'RR_COS': 'Q7COS', 'RR_ENG': 'Q7ENG',
+                       'RR_HLTH': 'Q7HLTH', 'RR_MATH': 'Q7MATH',
+                       'RR_NR': 'Q7NR', 'RR_GEO': 'Q7PHY1',
+                       'RR_PHY': 'Q7PHY2', 'RR_PSY': 'Q7PSY',
+                       'RR_SOC': 'Q7SOC', 'RR_OTH': 'Q7OTH',
+                       'RR_MED': 'P1Q8'},
+                2013: {'EXP_TOT': 'EXP_TOT_2012',
+                       'NASF_AG': 'P1Q2AG', 'NASF_BIO': 'P1Q2BIO',
+                       'NASF_COS': 'P1Q2COS', 'NASF_ENG': 'P1Q2ENG',
+                       'NASF_HLTH': 'P1Q2HLTH', 'NASF_MATH': 'P1Q2MATH',
+                       'NASF_NR': 'P1Q2NR', 'NASF_GEO': 'P1Q2GEO',
+                       'NASF_PHY': 'P1Q2PHY', 'NASF_PSY': 'P1Q2PSY',
+                       'NASF_SOC': 'P1Q2SOC', 'NASF_CLIN_TRIAL': None,
+                       'NASF_OTH': 'P1Q2OTH', 'NASF_MED': 'Q5',
+                       'RR_AG': 'P1Q7AGR', 'RR_BIO': 'P1Q7BIO',
+                       'RR_COS': 'P1Q7COS', 'RR_ENG': 'P1Q7ENG',
+                       'RR_HLTH': 'P1Q7HLTH', 'RR_MATH': 'P1Q7MATH',
+                       'RR_NR': None, 'RR_GEO': 'P1Q7PHY1',
+                       'RR_PHY': 'P1Q7PHY2', 'RR_PSY': 'P1Q7PSY',
+                       'RR_SOC': 'P1Q7SOC', 'RR_OTH': 'P1Q7OTH',
+                       'RR_MED': 'P1Q8'},
+                2011: {'SUBMISSION_FLAG': 'submission_flag',
+                       'EXP_TOT': 'EXP_TOT_2010',
+                       'NASF_AG': 'P1Q2AGR', 'NASF_BIO': 'P1Q2BIO',
+                       'NASF_COS': 'P1Q2COS', 'NASF_ENG': 'P1Q2ENG',
+                       'NASF_HLTH': 'P1Q2HLTH', 'NASF_MATH': 'P1Q2MATH',
+                       'NASF_NR': None, 'NASF_GEO': 'P1Q2PHY1',
+                       'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
+                       'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
+                       'NASF_MED': 'P1Q5', 'RR_AG': 'P1Q7AGR',
+                       'RR_BIO': 'P1Q7BIO', 'RR_COS': 'P1Q7COS',
+                       'RR_ENG': 'P1Q7ENG', 'RR_HLTH': 'P1Q7HLTH',
+                       'RR_MATH': 'P1Q7MATH', 'RR_NR': None,
+                       'RR_GEO': 'P1Q7PHY1', 'RR_PHY': 'P1Q7PHY2',
+                       'RR_PSY': 'P1Q7PSY', 'RR_SOC': 'P1Q7SOC',
+                       'RR_OTH': 'P1Q7OTH', 'RR_MED': 'P1Q8'},
+                2009: {'SUBMISSION_FLAG': 'submission_flag',
+                       'INST_STATE': 'inst_state', 'TOC_CODE': 'toc_code',
+                       'EXP_TOT': 'exp_tot_2008',
+                       'NASF_AG': 'P1Q2AGR', 'NASF_BIO': 'P1Q2BIO',
+                       'NASF_COS': 'P1Q2COS', 'NASF_ENG': 'P1Q2ENG',
+                       'NASF_HLTH': 'P1Q2HLTH', 'NASF_MATH': 'P1Q2MATH',
+                       'NASF_NR': None, 'NASF_GEO': 'P1Q2PHY1',
+                       'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
+                       'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
+                       'NASF_MED': 'P1Q5', 'RR_AG': 'P1Q9AGR',
+                       'RR_BIO': 'P1Q9BIO',
+                       'RR_COS': 'P1Q9COS', 'RR_ENG': 'P1Q9ENG',
+                       'RR_HLTH': 'P1Q9HLTH', 'RR_MATH': 'P1Q9MATH',
+                       'RR_NR': None, 'RR_GEO': 'P1Q9PHY1',
+                       'RR_PHY': 'P1Q9PHY2', 'RR_PSY': 'P1Q9PSY',
+                       'RR_SOC': 'P1Q9SOC', 'RR_OTH': 'P1Q9OTH',
+                       'RR_MED': 'P1Q11'},
+                2007: {'SUBMISSION_FLAG': 'submission_flag',
+                       'INST_STATE': 'inst_state', 'TOC_CODE': 'toc_code',
+                       'EXP_TOT': 'exp_tot_2006',
+                       'NASF_AG': 'P1Q2AGR', 'NASF_BIO': 'P1Q2BIO',
+                       'NASF_COS': 'P1Q2COS', 'NASF_ENG': 'P1Q2ENG',
+                       'NASF_HLTH': 'P1Q2HLTH', 'NASF_MATH': 'P1Q2MATH',
+                       'NASF_NR': None, 'NASF_GEO': 'P1Q2PHY1',
+                       'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
+                       'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
+                       'NASF_MED': 'P1Q5', 'RR_AG': 'P1Q9AGR',
+                       'RR_BIO': 'P1Q9BIO',
+                       'RR_COS': 'P1Q9COS', 'RR_ENG': 'P1Q9ENG',
+                       'RR_HLTH': 'P1Q9HLTH', 'RR_MATH': 'P1Q9MATH',
+                       'RR_NR': None, 'RR_GEO': 'P1Q9PHY1',
+                       'RR_PHY': 'P1Q9PHY2', 'RR_PSY': 'P1Q9PSY',
+                       'RR_SOC': 'P1Q9SOC', 'RR_OTH': 'P1Q9OTH',
+                       'RR_MED': 'P1Q11'}
+                }
 
 
-def get_NASF(year):
-    prefix = NASF_PREFIXES[max(
-        [x for x in NASF_PREFIXES.keys() if x <= year])]
-    subjects = NASF_SUBJECT_LIST[max(
-        [x for x in NASF_SUBJECT_LIST.keys() if x <= year])]
-    return [prefix + x for x in subjects]
-
-
-RR_SUBJECT_LIST = {2015: ['AG', 'BIO', 'COS', 'ENG',
-                          'HLTH', 'MATH', 'NR', 'GEO', 'PHY', 'PSY', 'SOC',
-                          'OTH', 'CLIN_TRIAL', 'MED'],
-                   2011: ['AGR', 'BIO', 'COS', 'ENG', 'HLTH', 'MATH', 'PHY1',
-                   'PHY2', 'PSY', 'SOC', 'OTH']
-                   }
-
-# annoyingly P1Q8 is the equivalent of RR_MED,
-# so I'll have to add a special case in the translation function
-
-RR_PREFIXES = {2017: 'RR_', 2015: 'Q7', 2011: 'P1Q7', 2007: 'P1Q9'}
-
-# General but neccessary collumns.
-# Usually has to do with the institution itself.
-GENERAL_COLUMNS = {2019: [
-    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
-    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2018'], 2017: [
-    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
-    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2016'], 2015: [
-    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
-    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2014'], 2013: [
-    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
-    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2012'], 2011: [
-    'YEAR', 'INST_ID', 'INST_NAME', 'SUBMISSION_FLAG',
-    'INST_TYPE', 'INST_STATE', 'TOC_CODE', 'EXP_TOT_2010'], 2009: [
-    'YEAR', 'INST_ID', 'INST_NAME', 'submission_flag', 'inst_type',
-    'inst_state', 'toc_code', 'exp_tot_2008'], 2007: [
-    'YEAR', 'INST_ID', 'INST_NAME', 'submission_flag', 'inst_type',
-    'inst_state', 'toc_code', 'exp_tot_2006']
-}
-
-
-def get_general(year):
-    return GENERAL_COLUMNS[max([x for x in GENERAL_COLUMNS.keys()
-                                if x <= year])]
-
-
-# This was originally going to be for the insertion of NaN into the dataset
-# per row, but that ended up not being neccessary. Currently the only used
-# key is 'SUBMISSION_FLAG', to filter for respondents, and the other entries
-# are just used for pulling the valid column names.
-# Strucuture is FILTER_VALUES[year][column_name], which returns a list of lists
-# in which the first value is the "positive" or "goal" value, and the rest
-# is the columns that should be made NaN if the key value is not
-# FILTER_VALUES[year][column_name][0]
-FILTER_VALUES = {
-    2019:
-    {'SUBMISSION_FLAG': ['Y', None],
-     # 'RRBOX' onward is not needed, I'm just
-     # keeping it in here in case it comes in useful later.
-     'RRBOX':
-     ['1', 'RR_AG', 'RR_BIO', 'RR_COS', 'RR_ENG', 'RR_GEO', 'RR_HLTH',
-      'RR_MATH', 'RR_NR', 'RR_PHY', 'RR_PSY', 'RR_SOC', 'RR_OTH',
-      'RR_TFUND', 'RR_CLIN_TRIAL', 'RR_MED'],
-     'NCBOX': ['1', 'NC_FED', 'NC_STA', 'NC_INST', 'NC_TFUND'],
-     'PNCBOX':
-     ['1', 'PNC_AG_1', 'PNC_BIO_1', 'PNC_COS_1', 'PNC_ENG_1', 'PNC_GEO_1',
-        'PNC_HLTH_1', 'PNC_MATH_1', 'PNC_NR_1', 'PNC_PHY_1', 'PNC_PSY_1',
-        'PNC_SOC_1', 'PNC_OTH_1'
-        'PNC_AG_2', 'PNC_BIO_2', 'PNC_COS_2', 'PNC_ENG_2', 'PNC_GEO_2',
-        'PNC_HLTH_2', 'PNC_MATH_2', 'PNC_NR_2', 'PNC_PHY_2', 'PNC_PSY_2',
-        'PNC_SOC_2', 'PNC_OTH_2'],
-     'PRRBOX':
-     ['1', 'PRR_AG', 'PRR_BIO', 'PRR_COS', 'PRR_ENG', 'PRR_GEO',
-      'PRR_HLTH', 'PRR_MATH', 'PRR_NR', 'PRR_PHY', 'PRR_PSY', 'PRR_SOC',
-      'PRR_OTH']
-     }, 2017:
-    {'SUBMISSION_FLAG': ['Y', None],
-     # 'RRBOX' onward is not needed, I'm just
-     # keeping it in here in case it comes in useful later.
-     'RRBOX':
-     ['1', 'RR_AG', 'RR_BIO', 'RR_COS', 'RR_ENG', 'RR_GEO', 'RR_HLTH',
-      'RR_MATH', 'RR_NR', 'RR_PHY', 'RR_PSY', 'RR_SOC', 'RR_OTH',
-      'RR_TFUND', 'RR_CLIN_TRIAL', 'RR_MED'],
-     'NCBOX': ['1', 'NC_FED', 'NC_STA', 'NC_INST', 'NC_TFUND'],
-     'PNCBOX':
-     ['1', 'PNC_AG_1', 'PNC_BIO_1', 'PNC_COS_1', 'PNC_ENG_1', 'PNC_GEO_1',
-        'PNC_HLTH_1', 'PNC_MATH_1', 'PNC_NR_1', 'PNC_PHY_1', 'PNC_PSY_1',
-        'PNC_SOC_1', 'PNC_OTH_1'
-        'PNC_AG_2', 'PNC_BIO_2', 'PNC_COS_2', 'PNC_ENG_2', 'PNC_GEO_2',
-        'PNC_HLTH_2', 'PNC_MATH_2', 'PNC_NR_2', 'PNC_PHY_2', 'PNC_PSY_2',
-        'PNC_SOC_2', 'PNC_OTH_2'],
-     'PRRBOX':
-     ['1', 'PRR_AG', 'PRR_BIO', 'PRR_COS', 'PRR_ENG', 'PRR_GEO',
-      'PRR_HLTH', 'PRR_MATH', 'PRR_NR', 'PRR_PHY', 'PRR_PSY', 'PRR_SOC',
-      'PRR_OTH']
-     }, 2015:
-    {'SUBMISSION_FLAG': ['Y', None],
-     # 'RRBOX' onward is not needed, I'm just
-     # keeping it in here in case it comes in useful later.
-     'RRBOX':
-     ['1', 'RR_AG', 'RR_BIO', 'RR_COS', 'RR_ENG', 'RR_GEO', 'RR_HLTH',
-      'RR_MATH', 'RR_NR', 'RR_PHY', 'RR_PSY', 'RR_SOC', 'RR_OTH',
-      'RR_TFUND', 'RR_CLIN_TRIAL', 'RR_MED'],
-     'NCBOX': ['1', 'NC_FED', 'NC_STA', 'NC_INST', 'NC_TFUND'],
-     'PNCBOX':
-     ['1', 'PNC_AG_1', 'PNC_BIO_1', 'PNC_COS_1', 'PNC_ENG_1', 'PNC_GEO_1',
-        'PNC_HLTH_1', 'PNC_MATH_1', 'PNC_NR_1', 'PNC_PHY_1', 'PNC_PSY_1',
-        'PNC_SOC_1', 'PNC_OTH_1'
-        'PNC_AG_2', 'PNC_BIO_2', 'PNC_COS_2', 'PNC_ENG_2', 'PNC_GEO_2',
-        'PNC_HLTH_2', 'PNC_MATH_2', 'PNC_NR_2', 'PNC_PHY_2', 'PNC_PSY_2',
-        'PNC_SOC_2', 'PNC_OTH_2'],
-     'PRRBOX':
-     ['1', 'PRR_AG', 'PRR_BIO', 'PRR_COS', 'PRR_ENG', 'PRR_GEO',
-      'PRR_HLTH', 'PRR_MATH', 'PRR_NR', 'PRR_PHY', 'PRR_PSY', 'PRR_SOC',
-      'PRR_OTH']
-     },
-}
+def get_column(year, col=None):
+    if col is None:
+        return _CHANGE_LIST[year]
+    elif col == -1:
+        return [_CHANGE_LIST[max(_CHANGE_LIST.keys())][x]
+                for x in _CHANGE_LIST[max(_CHANGE_LIST.keys())].keys()
+                if x not in _CHANGE_LIST[year].keys()] + list(
+            _CHANGE_LIST[year].values())
+    elif col in _CHANGE_LIST[year].keys():
+        return _CHANGE_LIST[year][col]
+    elif col in _CHANGE_LIST[max(_CHANGE_LIST.keys())].keys():
+        return _CHANGE_LIST[max(_CHANGE_LIST.keys())][col]
+    else:
+        return 'INVALID COL NAME: ' + str(col)

@@ -5,11 +5,8 @@ Set of methods for the analysis of sanitized data from
 the National Science Foundation's Survey of Science and Engineering Research.
 More information on specific functions can be found in function headers.
 '''
-from cmath import log
 from pathlib import Path
-# import sys
 from os.path import abspath
-import numpy
 import pandas as pd
 import geopandas as gpd
 from state_abbrev import abbrev_to_us_state
@@ -55,6 +52,8 @@ col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
 # Plot or print list of areas with most institutions, and list of areas
 # with most square footage in institutions
 # do max() and min() of subjects and spit those out (print?)
+
+
 def subject_focus(data, to_plot=False):
     '''
     Outputs information on research subjects and the broadness of their
@@ -90,9 +89,9 @@ def plot_focus(counts, nasf):
     '''
     # sorts compiled data from largest to smallest
     counts = dict(sorted(counts.items(),
-                       key=lambda item: item[1], reverse=True))
+                         key=lambda item: item[1], reverse=True))
     nasf = dict(sorted(nasf.items(),
-                     key=lambda item: item[1], reverse=True))
+                       key=lambda item: item[1], reverse=True))
 
     # turns results into lists for quick access
     s_count = list(counts.values())
@@ -130,6 +129,8 @@ def plot_focus(counts, nasf):
 # occurances of funding sources (as in 2)
 # stretch: look at correlation between institution type and funding source
 # or state and funding source
+
+
 def calculate_amount_of_growth(data):
     '''
     Outputs analysis of growth of research institutions, represented by the
@@ -172,7 +173,7 @@ def multi_plot(data):
     years of data. Takes in a dataframe including all years of data from
     2009-2019. Specifically,<tasks go here>
     '''
-    years = [2017, 2019] #update when new ones added
+    years = [2017, 2019]  # update when new ones added
 
     # Question 1:
     # create bar graph in largest changes of number of insts. per state
@@ -188,9 +189,9 @@ def multi_plot(data):
     # Question 2:
     # Collect our counts and NASFs by area by year, then convert into a dict.
     # of lists of these for plotting
-    #[cts_2015, nasf_2015] = subject_focus(data[data['YEAR']==2015])
-    [cts_2017, nasf_2017] = subject_focus(data[data['YEAR']==2017])
-    [cts_2019, nasf_2019] = subject_focus(data[data['YEAR']==2019])
+    # [cts_2015, nasf_2015] = subject_focus(data[data['YEAR']==2015])
+    [cts_2017, nasf_2017] = subject_focus(data[data['YEAR'] == 2017])
+    [cts_2019, nasf_2019] = subject_focus(data[data['YEAR'] == 2019])
 
     # asssemble datasets for line graph plotting
     # i think there may be a way to do this in a nested loop but we'd need to
@@ -212,7 +213,7 @@ def multi_plot(data):
     for name in col_names:
         ax.plot(years, s_count[i], label=name)
         ax2.plot(years, s_nasf[i], label=name)
-        i+=1
+        i += 1
     fig.savefig(pics_dir + "subj_trends.png")
     # still needs title, legend, possibly adjust formatting; xaxis is screwed up
     print('not done!')
@@ -222,6 +223,8 @@ def multi_plot(data):
     # if you want to add something for it go ahead
 
 # think we should make this one private
+
+
 def plot_map(
         data, geo, column, func=None, ax=None, log_norm: bool = False,
         legend='True', legend_kwds=None, groupby='INST_STATE',
@@ -275,6 +278,8 @@ def plot_map(
     return ax
 
 # make this one private as well
+
+
 def save_fig(title, dir=None, filename=None, abs=None):
     '''
     Saves the resulting plot from data analysis to a new file. Values passed in
@@ -303,8 +308,8 @@ def main():
     # runs our functions
 
     # Extracts specific datasets for years, as needed
-    d2019 = data.copy(deep=True) # copies dataframe so Pandas doesn't get mad
-    d2019 = d2019[d2019['YEAR']==2019] #filters for only target year
+    d2019 = data.copy(deep=True)  # copies dataframe so Pandas doesn't get mad
+    d2019 = d2019[d2019['YEAR'] == 2019]  # filters for only target year
 
     # Maps amount of research institutions by state. for 2019
     plot_map(

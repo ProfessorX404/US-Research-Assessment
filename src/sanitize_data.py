@@ -1,5 +1,5 @@
 '''
-Xavier Beech
+Xavier Beech, Natalie Dean
 CSE163
 Sanitizes the National Science Foundation's Survey of
 Science and Engineering Research Facilities.
@@ -9,7 +9,7 @@ Dataset information can be found in
 from pathlib import Path
 import sys
 import pandas as pd
-from Constants import get_NASF, GENERAL_COLUMNS, FILTER_VALUES
+from Constants import get_column
 
 
 ''' call using this syntax in terminal:
@@ -26,6 +26,10 @@ from Constants import get_NASF, GENERAL_COLUMNS, FILTER_VALUES
 
 
 def _parse_years(years):
+    '''
+    Simple helper method to turn variety of possible String inputs
+    from arguments into list of years for the main method to churn through.
+    '''
     if isinstance(years, list):
         years = [int(year) for year in years]
         return years.sort()
@@ -41,6 +45,10 @@ def _parse_years(years):
 
 
 def _deparse_years(years_list):
+    '''
+    Simple helper method to take list of years and turn it back into
+    a string for file-naming purposes.
+    '''
     if isinstance(years_list, list):
         if len(years_list) > 1:
             years = str(min(years_list)) + '-' + str(max(years_list))
@@ -48,7 +56,7 @@ def _deparse_years(years_list):
             years = str(years_list[0])
         return years
     else:
-        return 'Invalid YEAR values! Program will crash shortly.'
+        return 'Invalid YEAR list! Program will crash shortly.'
 
 
 def main():
@@ -59,49 +67,54 @@ def main():
     argument-set instead. Pulls column names on a year-by-year basis
     from Constants.py
     '''
-    # Basic argument handling and reporting back to user for debug purposes.
+    # Basic argument handling and read-back.
     origin_path, location, years_str = sys.argv[1:]
-    # origin_path = abspath(origin_path)
-    # location = abspath(location)
     print('Data File Directory:', origin_path)
     print('Location Directory: ', location)
     years = _parse_years(years_str)
     years_str = _deparse_years(years)
     print('Year(s): ' + years_str)
+    # data is the dictionary that will hold the DataFrames for each year.
     data = dict()
+    # storage variable for tracking continuous indexing of each year
+    index_start = 0
     for year in years:
         # Reads data from CSV,
         # and then retrieves and aggregates into single list.
         data[year] = pd.read_csv(
             str(origin_path + 'facilities_' + str(year) + '.csv'),
             encoding='ISO-8859-1')
-        valid_columns = [GENERAL_COLUMNS[year], get_NASF(year)]
-        valid_columns.extend(FILTER_VALUES[year].keys())
-        # Iterates through keys of
-        # FILTER_VALUES and adds all values to
-        # list of valid_columns.
-        valid_columns.extend(map(lambda x: FILTER_VALUES[year][x][1:],
-                             FILTER_VALUES[year].keys()))
-        # Since FILTER_VALUES is a dictionary of
-        # list-of-lists with years as keys, once the
-        # values (list-of-lists) have been added they must then be
-        # unpacked to create a single list of Strings.
-        # More info in Constants.py.
-        valid_columns = [item for sublist in valid_columns for item in sublist]
-        # Now that a list of all columns we want to keep has been assembled,
-        # we can finally cut the dataset down to only those columns.
+        valid_columns = get_column(year, -1)
+        # Cuts dataset down to only columns we need to keep.
         data[year] = data[year].filter(items=valid_columns)
         # Filters only for values which have responses. Frankly I'm not sure
         # why they'd include non-Y answers in the dataset.
-        data[year] = data[year][data[year]['SUBMISSION_FLAG'] == 'Y'].drop(
-            labels='SUBMISSION_FLAG', axis=1)
+        data[year] = data[year][
+            data[year][get_column(year, 'SUBMISSION_FLAG')] == 'Y'].drop(
+            labels=get_column(year, 'SUBMISSION_FLAG'), axis=1)
+        # Some datasets for some reason have 'S' instead of Nan or 0
         data[year] = data[year].replace('S', 0)
-    Path(str(location + years_str + 'sanitized.csv')
+        # Renames all years of columns to 2019 standard
+        # (or technically the last available year)
+        # Also worth notiing is the format that the
+        # Constants dictionary is in is backwards
+        # for readabilities sake, so it flips the key-value
+        # order to be parsed by rename().
+        data[year] = data[year].rename(columns=dict(
+            (v, k) for k, v in get_column(year).items()))
+        # sets each year to have indexes following the previous year.
+        new_index = {x: x+index_start for x in data[year].index}
+        data[year] = data[year].rename(
+            index=new_index)
+        index_start += list(new_index.keys())[-1] + 1
+    Path(str(location + years_str + '_sanitized.csv')
          ).parent.mkdir(parents=True, exist_ok=True)
+    # merges all years into single continugous DataFrame.
     data = pd.concat(data.values())
+    # exports mega-DataFrame to csv.
     data.to_csv(str(location + years_str + '_sanitized.csv'))
     print('Export Successful! Path: ', Path(
-        str(location + years_str + 'sanitized.csv')))
+        str(location + years_str + '_sanitized.csv')))
 
 
 if __name__ == '__main__':
