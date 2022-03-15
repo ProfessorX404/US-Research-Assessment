@@ -12,12 +12,11 @@ import geopandas as gpd
 from state_abbrev import abbrev_to_us_state
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import Constants
 from collections import defaultdict
 
 '''
 call using path to the goal file
-ie   ex:./.env/python.exe ./src/sanitize_data.py \
+ie   ex:./.env/python.exe ./src/data_analysis.py \
         ./data/2019_sanitized.csv
         --there's probably a better way to do this for multiple files--
 '''
@@ -39,7 +38,7 @@ ie   ex:./.env/python.exe ./src/sanitize_data.py \
 # inelegant solution but just need to get code up and running
 # can add argument intake for this instead at some point
 year = 2019
-path = './data/2015-2019_sanitized.csv'
+path = './data/2007-2019_sanitized.csv'
 geopath = './data/state_geodata.json'
 pics_dir = './plots/'
 DROP_STATES = ['Alaska', 'Hawaii', 'Puerto Rico']
@@ -141,10 +140,10 @@ def calculate_amount_of_growth(data):
     '''
     RR_EXCEPT_THESE = ['CLIN_TRIAL']
     NC_LIST = ['NC_FED', 'NC_STA', 'NC_INST']
-    RETURN_LIST = Constants.GENERAL_COLUMNS[year]
-    RETURN_LIST.extend([
-        'RR_SUM', 'NC_SUM', 'GROWTH_SUM', 'MAX_FUND', 'MIN_FUND',
-        'SINGLE_FUND'])
+    # RETURN_LIST = Constants.GENERAL_COLUMNS[year]
+    # RETURN_LIST.extend([
+    #     'RR_SUM', 'NC_SUM', 'GROWTH_SUM', 'MAX_FUND', 'MIN_FUND',
+    #     'SINGLE_FUND'])
     n = 5
     # data['RR_SUM'] = numpy.np.zeros(data.shape[0] - 1, 1)
     cols = [str('RR_' + name) for name in col_names
@@ -159,9 +158,9 @@ def calculate_amount_of_growth(data):
         data[str(n) + '_FUNDED'] =\
             data[cols].columns[data[cols].values.argsort(1)[:, -n]]
         # RETURN_LIST.append(str(n) + '_FUNDED')
-    RETURN_LIST.remove("SUBMISSION_FLAG")
+    # RETURN_LIST.remove("SUBMISSION_FLAG")
     data = data.rename(index=data['INST_STATE'])
-    return data[RETURN_LIST]
+    return data
 
 
 # create a bar graph with largest changes in numbers of institutions by state?
