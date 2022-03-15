@@ -148,10 +148,10 @@ def calculate_amount_of_growth(data):
     # data['RR_SUM'] = numpy.np.zeros(data.shape[0] - 1, 1)
     cols = [str('RR_' + name) for name in col_names
             if name not in RR_EXCEPT_THESE]
-    data['RR_SUM'] = data[cols].sum(axis=1)
+    data['RR_SUM'] = data[cols].sum(axis=1) #warning here; deprecated dropping of nuisance columns
     data['NC_SUM'] = data[NC_LIST].sum(axis=1)
     data['GROWTH_SUM'] = data[['RR_SUM', 'NC_SUM']].sum(axis=1)
-    data['MAX_FUND'] = data[NC_LIST].idxmax(axis=1, skipna=True)
+    data['MAX_FUND'] = data[NC_LIST].idxmax(axis=1, skipna=True) #error thrown here, 'reduction operation 'argmax' not allowed for this dtype'
     data['MIN_FUND'] = data[NC_LIST].idxmin(axis=1)
     data['SINGLE_FUND'] = data['MAX_FUND'] == data['MIN_FUND']
     for n in range(1, n + 1):
@@ -172,7 +172,7 @@ def multi_plot(data):
     years of data. Takes in a dataframe including all years of data from
     2009-2019. Specifically,<tasks go here>
     '''
-    years = [2017, 2019]  # update when new ones added
+    years = [2007, 2009, 2011, 2013, 2015, 2017, 2019]
 
     # Question 1:
     # create bar graph in largest changes of number of insts. per state
@@ -309,7 +309,6 @@ def main():
     # Extracts specific datasets for years, as needed
     d2019 = data.copy(deep=True)  # copies dataframe so Pandas doesn't get mad
     d2019 = d2019[d2019['YEAR'] == 2019]  # filters for only target year
-
     # Maps amount of research institutions by state. for 2019
     plot_map(
         d2019, combined, func='count', column='Unnamed: 0')
