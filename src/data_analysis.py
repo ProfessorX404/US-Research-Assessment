@@ -321,7 +321,7 @@ def main():
     growth_data = calculate_amount_of_growth(d2019)
     # Plots investment in growth by state for 2019
     plot_map(
-        growth_data, combined, func='sum', column='EXP_TOT_2018',
+        growth_data, combined, func='sum', column='EXP_TOT',
         log_norm=True)
     save_fig('R&D Expenditures in 2018, by State ($)',
              dir=pics_dir, filename='state_growth.png')
