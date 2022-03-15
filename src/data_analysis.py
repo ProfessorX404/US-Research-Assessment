@@ -148,15 +148,20 @@ def calculate_amount_of_growth(data):
     # data['RR_SUM'] = numpy.np.zeros(data.shape[0] - 1, 1)
     cols = [str('RR_' + name) for name in col_names
             if name not in RR_EXCEPT_THESE]
-    data['RR_SUM'] = data[cols].sum(axis=1) #warning here; deprecated dropping of nuisance columns
+    # warning here; deprecated dropping of nuisance columns
+    data['RR_SUM'] = data[cols].sum(axis=1)
     data['NC_SUM'] = data[NC_LIST].sum(axis=1)
     data['GROWTH_SUM'] = data[['RR_SUM', 'NC_SUM']].sum(axis=1)
-    data['MAX_FUND'] = data[NC_LIST].idxmax(axis=1, skipna=True) #error thrown here, 'reduction operation 'argmax' not allowed for this dtype'
-    data['MIN_FUND'] = data[NC_LIST].idxmin(axis=1)
+    data['MAX_FUND'] = data[NC_LIST].apply(
+        pd.to_numeric, errors='coerce').idxmax(
+        axis=1, skipna=True)
+    data['MIN_FUND'] = data[NC_LIST].apply(
+        pd.to_numeric, errors='coerce').idxmin(axis=1)
     data['SINGLE_FUND'] = data['MAX_FUND'] == data['MIN_FUND']
     for n in range(1, n + 1):
         data[str(n) + '_FUNDED'] =\
-            data[cols].columns[data[cols].values.argsort(1)[:, -n]]
+            data[cols].columns[data[cols].apply(
+                pd.to_numeric, errors='coerce').values.argsort(1)[:, -n]]
         # RETURN_LIST.append(str(n) + '_FUNDED')
     # RETURN_LIST.remove("SUBMISSION_FLAG")
     data = data.rename(index=data['INST_STATE'])
@@ -214,17 +219,16 @@ def multi_plot(data):
         ax2.plot(years, s_nasf[i], label=name)
         i += 1
     fig.savefig(pics_dir + "subj_trends.png")
-    # still needs title, legend, possibly adjust formatting; xaxis is screwed up
+    # still needs title, legend, possibly adjust formatting;
+    # xaxis is screwed up
     print('not done!')
 
     # Question 3:
     # I dont know if we had temporal analyis planned for this but
     # if you want to add something for it go ahead
 
-# think we should make this one private
 
-
-def plot_map(
+def _plot_map(
         data, geo, column, func=None, ax=None, log_norm: bool = False,
         legend='True', legend_kwds=None, groupby='INST_STATE',
         geo_merge='NAME', how='right', dropna: bool = True,
@@ -245,20 +249,26 @@ def plot_map(
         ax = plt.subplots(1)[1]
     # group data by state (add func cases as needed)
     if func == 'sum':
+        data[column] = pd.to_numeric(data[column], errors='coerce')
         data = data.groupby(by=groupby).sum()
+        # print('after', data['EXP_TOT'])
     elif func == 'count':
+        data[column] = pd.to_numeric(data[column], errors='coerce')
         data = data.groupby(by=groupby).count()
     elif func is None:
         categorical = True
     else:
         print('Invalid func: ', str(func))
         return None
+    print(data[column])
     # merges shapefile with our counts data
     full_snames = {s: abbrev_to_us_state[s] for s in data.index}
     data = data.rename(index=full_snames)
     groupby = data.index
     geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
                     how=how)
+
+    # print('before', geo['EXP_TOT'])
     # filters out dropped vals
     if dropna:
         geo = geo.dropna(axis=0, how='any')
@@ -276,10 +286,8 @@ def plot_map(
         geo.plot(ax=ax, column=column, legend=legend, legend_kwds=legend_kwds)
     return ax
 
-# make this one private as well
 
-
-def save_fig(title, dir=None, filename=None, abs=None):
+def _save_fig(title, dir=None, filename=None, abs=None):
     '''
     Saves the resulting plot from data analysis to a new file. Values passed in
     are the figure title, the directory name, the file name, and an absolute
@@ -310,26 +318,27 @@ def main():
     d2019 = data.copy(deep=True)  # copies dataframe so Pandas doesn't get mad
     d2019 = d2019[d2019['YEAR'] == 2019]  # filters for only target year
     # Maps amount of research institutions by state. for 2019
-    plot_map(
+    _plot_map(
         d2019, combined, func='count', column='Unnamed: 0')
-    save_fig('Number of Institutions by State',
-             dir=pics_dir, filename='state_insts.png')
+    _save_fig('Number of Institutions by State',
+              dir=pics_dir, filename='state_insts.png')
     # Plots top and bottom 7 areas by number of institutions and sq. footage
     subject_focus(d2019, True)
     # Maps investment in growth by state for 2019
     growth_data = calculate_amount_of_growth(d2019)
     # Plots investment in growth by state for 2019
-    plot_map(
+    # print(growth_data.columns)
+    _plot_map(
         growth_data, combined, func='sum', column='EXP_TOT',
-        log_norm=True)
-    save_fig('R&D Expenditures in 2018, by State ($)',
-             dir=pics_dir, filename='state_growth.png')
+        log_norm=True, dropna=False)
+    _save_fig('R&D Expenditures in 2018, by State ($)',
+              dir=pics_dir, filename='state_growth.png')
     # Plots primary funding source for growth in each state
-    plot_map(
+    _plot_map(
         growth_data, combined, column='MAX_FUND', categorical=True,
-        legend_kwds={'loc': 'lower right', 'fontsize': 'small'})
-    save_fig('Primary Funding Source by State',
-             dir=pics_dir, filename='state_funding.png')
+        legend_kwds={'loc': 'lower right', 'fontsize': 'small'}, dropna=False)
+    _save_fig('Primary Funding Source by State',
+              dir=pics_dir, filename='state_funding.png')
     multi_plot(data)
 
 
