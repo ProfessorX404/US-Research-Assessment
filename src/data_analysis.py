@@ -186,7 +186,6 @@ def multi_plot(data):
     # per state
     # sort and then plot the top 10(?)
     grouped = data.groupby(by=['INST_STATE', 'YEAR']).count()
-    print(grouped)
     # now grouped into state and then year
     # grab values and subtract last from first then plot it
 
@@ -229,11 +228,10 @@ def multi_plot(data):
 
     lines_labels = [ax.get_legend_handles_labels()]
     lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
-    fig.legend(bbox_to_anchor=(0.65, 1.25))
-    # plt.subplots_adjust(left=0.15, bottom=0.1, right=.90)
+    fig.legend(lines, labels, bbox_to_anchor=(
+        .85, -.05), ncol=len(lines) // 3)
     fig.subplots_adjust(hspace=1)
     fig.savefig(pics_dir + "subj_trends.png", bbox_inches="tight")
-    print('not done!')
 
     # Question 3:
     # I dont know if we had temporal analyis planned for this but
@@ -276,7 +274,7 @@ def _plot_map(
     full_snames = {s: abbrev_to_us_state[s] for s in data.index}
     data = data.rename(index=full_snames)
     groupby = data.index
-    geo.plot(ax=ax, color='#EEEEEE') # plots all states before merge
+    geo.plot(ax=ax, color='#EEEEEE')  # plots all states before merge
     geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
                     how=how)
 
@@ -352,6 +350,7 @@ def main():
     _save_fig('Primary Funding Source by State',
               dir=pics_dir, filename='state_funding.png')
     multi_plot(data)
+    print('Done!')
 
 
 if __name__ == '__main__':
