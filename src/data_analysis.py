@@ -9,7 +9,7 @@ from pathlib import Path
 from os.path import abspath
 import pandas as pd
 import geopandas as gpd
-from Constants import abbrev_to_us_state, us_state_to_abbrev
+from Constants import abbrev_to_us_state
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from collections import defaultdict
@@ -168,49 +168,18 @@ def multi_plot(data):
     '''
     Plots the components of the above function involving analysis over multiple
     years of data. Takes in a dataframe including all years of data from
-    2009-2019. Specifically,<tasks go here>
+    2007-2019. Specifically, it aggregates and plots data relating to the
+    number of institutions pursuing research in a given field, and the
+    square footage dedicated to that research nationwide.
     '''
     years = list(range(min(data['YEAR']), max(data['YEAR'] + 1), 2))
 
-    # Question 1:
-    # create bar graph in largest changes of number of insts. per state
-    # I didn't use plotmap but might be possible to do so idk
-    # subtract state groupbys from one another- gives new column of diff.s
-    # per state
-    # sort and then plot the top 10(?)
-    grouped = data.groupby(by=['INST_STATE', 'YEAR']).count()
-    # now grouped into state and then year
-    # grab values and subtract last from first then plot it.
-    # # states = us_state_to_abbrev.values()
-    # for state in [x for x in grouped.index.get_level_values(0)
-    #               if x not in DROP_STATES]:
-    #     first_year = min(list(grouped.loc[state, :].index))
-    #     last_year = max(list(grouped.loc[state, :].index))
-    #     grouped.loc[state, :]['CHANGE'] =\
-    #         grouped.loc[(state, last_year), 'Unnamed: 0']\
-    #         - grouped.loc[(state, first_year), 'Unnamed: 0']
-
-    # top_n = list()
-    # bottom_n = list()
-    # for change in grouped['CHANGE']:
-    #     change_max = grouped['CHANGE'].idxmax()
-    #     change_max = grouped['CHANGE'].idxmax()
-
-    # plt.clf()
-    # fig, ax, ax2 = plt.subplots(2)
-    # ax.plot()
-    # Question 2:
     # Collect our counts and NASFs by area by year, then convert into a dict.
     # of lists of these for plotting
     cts = dict()
     nasf = dict()
     for year in years:
         cts[year], nasf[year] = subject_focus(data[data['YEAR'] == year])
-
-    # asssemble datasets for line graph plotting
-    # i think there may be a way to do this in a nested loop but we'd need to
-    # put the dictionaries in another data structure for that
-    # but this should work for now
     all_cts = defaultdict(list)
     all_nasf = defaultdict(list)
     for name in col_names:
@@ -242,10 +211,6 @@ def multi_plot(data):
         .85, -.05), ncol=len(lines) // 3)
     fig.subplots_adjust(hspace=1)
     fig.savefig(pics_dir + "subj_trends.png", bbox_inches="tight")
-
-    # Question 3:
-    # I dont know if we had temporal analyis planned for this but
-    # if you want to add something for it go ahead
 
 
 def _plot_map(
