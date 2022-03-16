@@ -178,6 +178,7 @@ def multi_plot(data):
     # of lists of these for plotting
     cts = dict()
     nasf = dict()
+    data.drop(['NASF_OTH', 'RR_OTH'], axis=1)
     for year in years:
         cts[year], nasf[year] = subject_focus(data[data['YEAR'] == year])
     all_cts = defaultdict(list)
