@@ -227,8 +227,14 @@ def multi_plot(data):
     ax2.set_title(
         'Dedicated Space (in sq. ft.) for Subject Research Nationally', y=1.1)
 
+    lines_labels = [ax.get_legend_handles_labels()]
+    lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
+    ax3 = fig.add_subplot(133)
+    ax3.axis("off")
+    ax3.legend(lines, labels, ncol=len(labels) // 3)
+    # plt.subplots_adjust(left=0.15, bottom=0.1, right=.90)
     fig.subplots_adjust(hspace=1)
-    fig.savefig(pics_dir + "subj_trends.png")
+    fig.savefig(pics_dir + "subj_trends.png", bbox_inches="tight")
     # still needs title, legend, possibly adjust formatting;
     # xaxis is screwed up
     print('not done!')

@@ -111,6 +111,7 @@ def main():
          ).parent.mkdir(parents=True, exist_ok=True)
     # merges all years into single continugous DataFrame.
     data = pd.concat(data.values())
+    data = data.replace(r'^\s*$', 0, regex=True)
     # exports mega-DataFrame to csv.
     data.to_csv(str(location + years_str + '_sanitized.csv'))
     print('Export Successful! Path: ', Path(
