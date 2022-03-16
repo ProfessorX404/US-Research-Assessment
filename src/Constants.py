@@ -51,6 +51,7 @@ _CHANGE_LIST = {2019: {'YEAR': 'YEAR', 'INST_ID': 'INST_ID',
                        'NASF_COS': 'P1Q2COS', 'NASF_ENG': 'P1Q2ENG',
                        'NASF_HLTH': 'P1Q2HLTH', 'NASF_MATH': 'P1Q2MATH',
                        'NASF_NR': None, 'NASF_GEO': 'P1Q2PHY1',
+                       'NASF_CLIN_TRIAL': None,
                        'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
                        'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
                        'NASF_MED': 'P1Q5', 'RR_AG': 'P1Q7AGR',
@@ -72,6 +73,7 @@ _CHANGE_LIST = {2019: {'YEAR': 'YEAR', 'INST_ID': 'INST_ID',
                        'NASF_NR': None, 'NASF_GEO': 'P1Q2PHY1',
                        'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
                        'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
+                       'NASF_CLIN_TRIAL': None,
                        'NASF_MED': 'P1Q5', 'RR_AG': 'P1Q7AGR',
                        'RR_BIO': 'P1Q7BIO', 'RR_COS': 'P1Q7COS',
                        'RR_ENG': 'P1Q7ENG', 'RR_HLTH': 'P1Q7HLTH',
@@ -92,6 +94,7 @@ _CHANGE_LIST = {2019: {'YEAR': 'YEAR', 'INST_ID': 'INST_ID',
                        'NASF_NR': None, 'NASF_GEO': 'P1Q2PHY1',
                        'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
                        'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
+                       'NASF_CLIN_TRIAL': None,
                        'NASF_MED': 'P1Q5', 'RR_AG': 'P1Q9AGR',
                        'RR_BIO': 'P1Q9BIO',
                        'RR_COS': 'P1Q9COS', 'RR_ENG': 'P1Q9ENG',
@@ -110,7 +113,7 @@ _CHANGE_LIST = {2019: {'YEAR': 'YEAR', 'INST_ID': 'INST_ID',
                        'NASF_AG': 'P1Q2AGR', 'NASF_BIO': 'P1Q2BIO',
                        'NASF_COS': 'P1Q2COS', 'NASF_ENG': 'P1Q2ENG',
                        'NASF_HLTH': 'P1Q2HLTH', 'NASF_MATH': 'P1Q2MATH',
-                       'NASF_NR': None,
+                       'NASF_NR': None, 'NASF_CLIN_TRIAL': None,
                        'NASF_GEO': 'P1Q2PHY1',
                        'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
                        'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
@@ -131,6 +134,12 @@ _CHANGE_LIST = {2019: {'YEAR': 'YEAR', 'INST_ID': 'INST_ID',
 
 
 def get_column(year, col=None):
+    '''
+    Returns year-specific equivalent of 2019 (or most up-to-date)
+    standard for column names. If column is not specified, then it
+    returns all changes made from that year to the current year.
+    If col is -1, it returns a complete list of all columns in that year.
+    '''
     if col is None:
         return _CHANGE_LIST[year]
     elif col == -1:

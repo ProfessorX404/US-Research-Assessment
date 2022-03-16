@@ -37,7 +37,6 @@ ie   ex:./.env/python.exe ./src/data_analysis.py \
 
 # inelegant solution but just need to get code up and running
 # can add argument intake for this instead at some point
-year = 2019
 path = './data/2007-2019_sanitized.csv'
 geopath = './data/state_geodata.json'
 pics_dir = './plots/'
@@ -140,12 +139,7 @@ def calculate_amount_of_growth(data):
     '''
     RR_EXCEPT_THESE = ['CLIN_TRIAL']
     NC_LIST = ['NC_FED', 'NC_STA', 'NC_INST']
-    # RETURN_LIST = Constants.GENERAL_COLUMNS[year]
-    # RETURN_LIST.extend([
-    #     'RR_SUM', 'NC_SUM', 'GROWTH_SUM', 'MAX_FUND', 'MIN_FUND',
-    #     'SINGLE_FUND'])
     n = 5
-    # data['RR_SUM'] = numpy.np.zeros(data.shape[0] - 1, 1)
     cols = [str('RR_' + name) for name in col_names
             if name not in RR_EXCEPT_THESE]
     # warning here; deprecated dropping of nuisance columns
@@ -162,8 +156,6 @@ def calculate_amount_of_growth(data):
         data[str(n) + '_FUNDED'] =\
             data[cols].columns[data[cols].apply(
                 pd.to_numeric, errors='coerce').values.argsort(1)[:, -n]]
-        # RETURN_LIST.append(str(n) + '_FUNDED')
-    # RETURN_LIST.remove("SUBMISSION_FLAG")
     data = data.rename(index=data['INST_STATE'])
     return data
 
@@ -188,7 +180,14 @@ def multi_plot(data):
     grouped = data.groupby(by=['INST_STATE', 'YEAR']).count()
     # now grouped into state and then year
     # grab values and subtract last from first then plot it
-
+    for state in grouped.index.get_level_values(0):
+        first_year = min(list(grouped.loc[state, :]))
+        last_year = max(list(grouped.loc[state, :]))
+        grouped.loc[state, last_year]['CHANGE'] =\
+            grouped.loc[state, last_year]['Unnamed: 0']\
+            - grouped.loc[state, first_year]['Unnamed: 0']
+    # states = list(grouped.loc[])
+    # change_data = grouped.loc[]
     # Question 2:
     # Collect our counts and NASFs by area by year, then convert into a dict.
     # of lists of these for plotting
