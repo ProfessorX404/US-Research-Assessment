@@ -170,7 +170,7 @@ def calculate_amount_of_growth(data):
 # create a bar graph with largest changes in numbers of institutions by state?
 # plot of subject areas' number of occurances over time
 # and/or square footage amounts over time
-def multi_plot(data):
+def multi_plot(data, fname = None):
     '''
     Plots the components of the above function involving analysis over multiple
     years of data. Takes in a dataframe including all years of data from
@@ -217,7 +217,10 @@ def multi_plot(data):
     fig.legend(lines, labels, bbox_to_anchor=(
         .85, -.05), ncol=len(lines) // 3)
     fig.subplots_adjust(hspace=1)
-    fig.savefig(pics_dir + "subj_trends.png", bbox_inches="tight")
+    if fname is None:
+        fig.savefig(pics_dir + "subj_trends.png", bbox_inches="tight")
+    else:
+        fig.savefig(pics_dir + fname + "multi.png", bbox_inches="tight")
 
 
 def _plot_map(

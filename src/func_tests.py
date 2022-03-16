@@ -80,8 +80,8 @@ def test_calc_amt_growth(d2007, d2019, combined):
     d07 = data_analysis.calculate_amount_of_growth(d2007)
     d19 = data_analysis.calculate_amount_of_growth(d2019)
     # plots for 2007; we expect the highest funding sources for states to be:
-    # AL: fed, AR: inst, AZ:inst, CA:inst
-    # Expect
+    # AL: state, AR: inst, AZ:state, CA:state
+    # Expect AK < CA < AL < AZ
     data_analysis._plot_map(
         d07, combined, func='sum', column='EXP_TOT',  # ERROR HERE!!!!
         log_norm=True, dropna=False)
@@ -93,8 +93,8 @@ def test_calc_amt_growth(d2007, d2019, combined):
     data_analysis._save_fig('Primary Funding Source by State',
                             dir=pics_dir, filename='fund_2007test.png')
     # plots for 2019: we expect highest funding sources for states to be:
-    # AL: AR: AZ: CA:
-    # Expect
+    # AL:Inst AZ:Inst CA:Fed AK: Fed
+    # Expect AZ < CA < AK < AL
     data_analysis._plot_map(
         d19, combined, func='sum', column='EXP_TOT',
         log_norm=True, dropna=False)
@@ -107,13 +107,12 @@ def test_calc_amt_growth(d2007, d2019, combined):
                             dir=pics_dir, filename='fund_2019test.png')
 
 
-def test_multi_plot(d2007, d2019, combined):
+def test_multi_plot(d2007, d2019):
     '''
     Tests the multi_plot function from data_analysis.py
     '''
     dcombined = pd.concat([d2007, d2019], ignore_index=True)
-    print(dcombined)
-    # data_analysis.multi_plot(d2007, d2019, combined)
+    data_analysis.multi_plot(dcombined, '2007_19_test')
     print('not done!')
 
 
@@ -132,6 +131,9 @@ def main():
 
     # test funding
     test_calc_amt_growth(d2007, d2019, combined)
+
+    # test multi_plot
+    test_multi_plot(d2007, d2019)
 
 
 if __name__ == '__main__':
