@@ -181,7 +181,7 @@ def multi_plot(data):
     grouped = data.groupby(by=['INST_STATE', 'YEAR']).count()
     # now grouped into state and then year
     # grab values and subtract last from first then plot it.
-    # states = us_state_to_abbrev.values()
+    # # states = us_state_to_abbrev.values()
     # for state in [x for x in grouped.index.get_level_values(0)
     #               if x not in DROP_STATES]:
     #     first_year = min(list(grouped.loc[state, :].index))
@@ -196,9 +196,9 @@ def multi_plot(data):
     #     change_max = grouped['CHANGE'].idxmax()
     #     change_max = grouped['CHANGE'].idxmax()
 
-    plt.clf()
-    fig, ax, ax2 = plt.subplot(1)
-    ax.plot()
+    # plt.clf()
+    # fig, ax, ax2 = plt.subplots(2)
+    # ax.plot()
     # Question 2:
     # Collect our counts and NASFs by area by year, then convert into a dict.
     # of lists of these for plotting
