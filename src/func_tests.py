@@ -56,11 +56,13 @@ def test_subject_focus(d2007, d2019, combined):
 
     print('not done!')
 
+
 def test_calc_amt_growth():
     '''
 
     '''
     print('not done!')
+
 
 def test_multi_plot():
     '''
@@ -70,7 +72,7 @@ def test_multi_plot():
 
 def main():
     d2007 = pd.read_csv(abspath(path_2007), encoding='ISO-8859-1')
-    d2019 =  pd.read_csv(abspath(path_2019), encoding='ISO-8859-1')
+    d2019 = pd.read_csv(abspath(path_2019), encoding='ISO-8859-1')
     print(d2007.head())
     print(d2019.head())
     combined = gpd.read_file(abspath(geopath), encoding='utf-8')
@@ -81,6 +83,7 @@ def main():
 
     # test focus
     test_subject_focus(d2007, d2019, combined)
+
 
 if __name__ == '__main__':
     main()
