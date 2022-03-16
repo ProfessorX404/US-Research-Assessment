@@ -9,7 +9,7 @@ from pathlib import Path
 from os.path import abspath
 import pandas as pd
 import geopandas as gpd
-from state_abbrev import abbrev_to_us_state
+from Constants import abbrev_to_us_state
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from collections import defaultdict
@@ -229,14 +229,10 @@ def multi_plot(data):
 
     lines_labels = [ax.get_legend_handles_labels()]
     lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
-    ax3 = fig.add_subplot(133)
-    ax3.axis("off")
-    ax3.legend(lines, labels, ncol=len(labels) // 3)
+    fig.legend(bbox_to_anchor=(0.65, 1.25))
     # plt.subplots_adjust(left=0.15, bottom=0.1, right=.90)
     fig.subplots_adjust(hspace=1)
     fig.savefig(pics_dir + "subj_trends.png", bbox_inches="tight")
-    # still needs title, legend, possibly adjust formatting;
-    # xaxis is screwed up
     print('not done!')
 
     # Question 3:

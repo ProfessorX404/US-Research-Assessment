@@ -30,10 +30,15 @@ def _parse_years(years):
     Simple helper method to turn variety of possible String inputs
     from arguments into list of years for the main method to churn through.
     '''
-    if isinstance(years, list):
-        years = [int(year) for year in years]
-        return years.sort()
-    elif isinstance(years, str):
+    if isinstance(years, str):
+        if years[0] == '[':
+            print(years)
+            years = years[1:len(years)-1]
+            print(years)
+            years = years.split(',')
+            print(years)
+            years = [int(year) for year in years]
+            return years.sort()
         return list(
             range(
                 int(years.split(':')[0]),
@@ -68,10 +73,11 @@ def main():
     from Constants.py
     '''
     # Basic argument handling and read-back.
-    origin_path, location, years_str = sys.argv[1:]
+    origin_path, location = sys.argv[1:3]
+    years_str = sys.argv[3:]
     print('Data File Directory:', origin_path)
     print('Location Directory: ', location)
-    years = _parse_years(years_str)
+    years = [2007]  # _parse_years(years_str)
     years_str = _deparse_years(years)
     print('Year(s): ' + years_str)
     # data is the dictionary that will hold the DataFrames for each year.
@@ -102,6 +108,8 @@ def main():
         # order to be parsed by rename().
         data[year] = data[year].rename(columns=dict(
             (v, k) for k, v in get_column(year).items()))
+
+        data[year][[k for k, v in get_column(year).items() if v is None]] = 0
         # sets each year to have indexes following the previous year.
         new_index = {x: x+index_start for x in data[year].index}
         data[year] = data[year].rename(

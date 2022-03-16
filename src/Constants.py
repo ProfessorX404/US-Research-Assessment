@@ -110,14 +110,16 @@ _CHANGE_LIST = {2019: {'YEAR': 'YEAR', 'INST_ID': 'INST_ID',
                        'NASF_AG': 'P1Q2AGR', 'NASF_BIO': 'P1Q2BIO',
                        'NASF_COS': 'P1Q2COS', 'NASF_ENG': 'P1Q2ENG',
                        'NASF_HLTH': 'P1Q2HLTH', 'NASF_MATH': 'P1Q2MATH',
-                       'NASF_NR': None, 'NASF_GEO': 'P1Q2PHY1',
+                       'NASF_NR': None,
+                       'NASF_GEO': 'P1Q2PHY1',
                        'NASF_PHY': 'P1Q2PHY2', 'NASF_PSY': 'P1Q2PSY',
                        'NASF_SOC': 'P1Q2SOC', 'NASF_OTH': 'P1Q2OTH',
                        'NASF_MED': 'P1Q5', 'RR_AG': 'P1Q9AGR',
                        'RR_BIO': 'P1Q9BIO',
                        'RR_COS': 'P1Q9COS', 'RR_ENG': 'P1Q9ENG',
                        'RR_HLTH': 'P1Q9HLTH', 'RR_MATH': 'P1Q9MATH',
-                       'RR_NR': None, 'RR_GEO': 'P1Q9PHY1',
+                       'RR_NR': None,
+                       'RR_GEO': 'P1Q9PHY1',
                        'RR_PHY': 'P1Q9PHY2', 'RR_PSY': 'P1Q9PSY',
                        'RR_SOC': 'P1Q9SOC', 'RR_OTH': 'P1Q9OTH',
                        'RR_MED': 'P1Q11', 'RR_FED': 'P1Q13A1',
@@ -142,3 +144,80 @@ def get_column(year, col=None):
         return _CHANGE_LIST[max(_CHANGE_LIST.keys())][col]
     else:
         return 'INVALID COL NAME: ' + str(col)
+
+# United States of America Python Dictionary to translate States,
+# Districts & Territories to Two-Letter codes and vice versa.
+#
+# Canonical URL: https://gist.github.com/rogerallen/1583593
+#
+# Dedicated to the public domain.  To the extent possible under law,
+# Roger Allen has waived all copyright and related or neighboring
+# rights to this code.  Data originally from Wikipedia at the url:
+# https://en.wikipedia.org/wiki/ISO_3166-2:US
+#
+# Automatically Generated 2021-09-11 18:04:36 via Jupyter Notebook from
+# https://gist.github.com/rogerallen/d75440e8e5ea4762374dfd5c1ddf84e0
+
+
+us_state_to_abbrev = {
+    "Alabama": "AL",
+    "Alaska": "AK",
+    "Arizona": "AZ",
+    "Arkansas": "AR",
+    "California": "CA",
+    "Colorado": "CO",
+    "Connecticut": "CT",
+    "Delaware": "DE",
+    "Florida": "FL",
+    "Georgia": "GA",
+    "Hawaii": "HI",
+    "Idaho": "ID",
+    "Illinois": "IL",
+    "Indiana": "IN",
+    "Iowa": "IA",
+    "Kansas": "KS",
+    "Kentucky": "KY",
+    "Louisiana": "LA",
+    "Maine": "ME",
+    "Maryland": "MD",
+    "Massachusetts": "MA",
+    "Michigan": "MI",
+    "Minnesota": "MN",
+    "Mississippi": "MS",
+    "Missouri": "MO",
+    "Montana": "MT",
+    "Nebraska": "NE",
+    "Nevada": "NV",
+    "New Hampshire": "NH",
+    "New Jersey": "NJ",
+    "New Mexico": "NM",
+    "New York": "NY",
+    "North Carolina": "NC",
+    "North Dakota": "ND",
+    "Ohio": "OH",
+    "Oklahoma": "OK",
+    "Oregon": "OR",
+    "Pennsylvania": "PA",
+    "Rhode Island": "RI",
+    "South Carolina": "SC",
+    "South Dakota": "SD",
+    "Tennessee": "TN",
+    "Texas": "TX",
+    "Utah": "UT",
+    "Vermont": "VT",
+    "Virginia": "VA",
+    "Washington": "WA",
+    "West Virginia": "WV",
+    "Wisconsin": "WI",
+    "Wyoming": "WY",
+    "District of Columbia": "DC",
+    "American Samoa": "AS",
+    "Guam": "GU",
+    "Northern Mariana Islands": "MP",
+    "Puerto Rico": "PR",
+    "United States Minor Outlying Islands": "UM",
+    "U.S. Virgin Islands": "VI",
+}
+
+# invert the dictionary
+abbrev_to_us_state = dict(map(reversed, us_state_to_abbrev.items()))
