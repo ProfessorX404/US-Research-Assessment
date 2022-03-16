@@ -170,12 +170,13 @@ def calculate_amount_of_growth(data):
 # create a bar graph with largest changes in numbers of institutions by state?
 # plot of subject areas' number of occurances over time
 # and/or square footage amounts over time
-def multi_plot(data, fname = None):
+def multi_plot(data, fname=None):
     '''
-    Plots the components of the above function involving analysis over multiple
-    years of data. Takes in a dataframe including all years of data from
-    2007-2019. Specifically, it aggregates and plots data relating to the
-    number of institutions pursuing research in a given field, and the
+    Plots the components of the above function involving analysis over
+    multiple years of data. Takes in a dataframe including all
+    years of data from 2007-2019. Specifically, it aggregates
+    and plots data relating to the number of institutions
+    pursuing research in a given field, and the
     square footage dedicated to that research nationwide.
     '''
     years = []
