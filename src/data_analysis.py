@@ -79,7 +79,7 @@ def subject_focus(data, to_plot=False):
     return [subj_counts, subj_nasf]
 
 
-def _plot_focus(counts, nasf, fname = None):
+def _plot_focus(counts, nasf, fname=None):
     '''
     Helper function for subject_focus. Plots the results of analyis from the
     function on two separate plots, one for the most represented subjects and
@@ -178,7 +178,10 @@ def multi_plot(data, fname = None):
     number of institutions pursuing research in a given field, and the
     square footage dedicated to that research nationwide.
     '''
-    years = list(range(min(data['YEAR']), max(data['YEAR'] + 1), 2))
+    years = []
+    for x in data['YEAR']:
+        if x not in years:
+            years.append(x)
 
     # Collect our counts and NASFs by area by year, then convert into a dict.
     # of lists of these for plotting
