@@ -177,7 +177,7 @@ def multi_plot(data):
     years of data. Takes in a dataframe including all years of data from
     2009-2019. Specifically,<tasks go here>
     '''
-    years = [2007, 2009, 2011, 2013, 2015, 2017, 2019]
+    years = list(range(min(data['YEAR']), max(data['YEAR'] + 1), 2))
 
     # Question 1:
     # create bar graph in largest changes of number of insts. per state
@@ -193,9 +193,10 @@ def multi_plot(data):
     # Question 2:
     # Collect our counts and NASFs by area by year, then convert into a dict.
     # of lists of these for plotting
-    # [cts_2015, nasf_2015] = subject_focus(data[data['YEAR']==2015])
-    [cts_2017, nasf_2017] = subject_focus(data[data['YEAR'] == 2017])
-    [cts_2019, nasf_2019] = subject_focus(data[data['YEAR'] == 2019])
+    cts = dict()
+    nasf = dict()
+    for year in years:
+        cts[year], nasf[year] = subject_focus(data[data['YEAR'] == year])
 
     # asssemble datasets for line graph plotting
     # i think there may be a way to do this in a nested loop but we'd need to
@@ -204,11 +205,9 @@ def multi_plot(data):
     all_cts = defaultdict(list)
     all_nasf = defaultdict(list)
     for name in col_names:
-        all_cts[name].append(cts_2017[name])
-        all_cts[name].append(cts_2019[name])
-
-        all_nasf[name].append(nasf_2017[name])
-        all_nasf[name].append(nasf_2019[name])
+        for year in years:
+            all_cts[name].append(cts[year][name])
+            all_nasf[name].append(nasf[year][name])
 
     s_count = list(all_cts.values())
     s_nasf = list(all_nasf.values())
@@ -260,7 +259,6 @@ def _plot_map(
     else:
         print('Invalid func: ', str(func))
         return None
-    print(data[column])
     # merges shapefile with our counts data
     full_snames = {s: abbrev_to_us_state[s] for s in data.index}
     data = data.rename(index=full_snames)

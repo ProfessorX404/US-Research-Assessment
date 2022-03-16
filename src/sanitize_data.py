@@ -93,7 +93,7 @@ def main():
             data[year][get_column(year, 'SUBMISSION_FLAG')] == 'Y'].drop(
             labels=get_column(year, 'SUBMISSION_FLAG'), axis=1)
         # Some datasets for some reason have 'S' instead of Nan or 0
-        data[year] = data[year].replace('S', 0)
+        data[year] = data[year].replace(['S', 'M'], 0)
         # Renames all years of columns to 2019 standard
         # (or technically the last available year)
         # Also worth notiing is the format that the
