@@ -43,26 +43,26 @@ def test_subject_focus(d2007, d2019):
     D1, D2 = data_analysis.subject_focus(d2007)
     assert_equals(
         {'AG': 8, 'BIO': 20, 'COS': 18, 'ENG': 15, 'GEO': 13, 'HLTH': 14,
-         'MATH': 16, 'NR': 0, 'PHY': 18, 'PSY': 16, 'SOC': 17, 'OTH': 5,
+         'MATH': 16, 'NR': 0, 'PHY': 18, 'PSY': 16, 'SOC': 17,
          'CLIN_TRIAL': 0, 'MED': 5},
         D1)
     assert_equals({'AG': 1291747, 'BIO': 1362821, 'COS': 138242,
                    'ENG': 1297715, 'GEO': 356720, 'HLTH': 1120561,
                    'MATH': 50010, 'NR': 0, 'PHY': 1174583, 'PSY': 137168,
-                   'SOC': 250954, 'OTH': 169063, 'CLIN_TRIAL': 0,
+                   'SOC': 250954, 'CLIN_TRIAL': 0,
                    'MED': 1058810}, D2)
 
     # Tests 2019 dataset. Comparison values determined manually via Excel.
     D3, D4 = data_analysis.subject_focus(d2019)
     assert_equals(
         {'AG': 9, 'BIO': 21, 'COS': 19, 'ENG': 19, 'GEO': 14, 'HLTH': 17,
-         'MATH': 16, 'NR': 9, 'PHY': 18, 'PSY': 16, 'SOC': 16, 'OTH': 3,
+         'MATH': 16, 'NR': 9, 'PHY': 18, 'PSY': 16, 'SOC': 16,
          'CLIN_TRIAL': 6, 'MED': 5},
         D3)
     assert_equals({'AG': 867350, 'BIO': 1872855, 'COS': 175036,
                    'ENG': 1568029, 'GEO': 425916, 'HLTH': 1003143,
                    'MATH': 62232, 'NR': 121484, 'PHY': 1274448, 'PSY': 180386,
-                   'SOC': 213774, 'OTH': 122865, 'CLIN_TRIAL': 83563,
+                   'SOC': 213774, 'CLIN_TRIAL': 83563,
                    'MED': 1141052}, D4)
 
     # Tests plotting of both datasets:
@@ -83,15 +83,15 @@ def test_calc_amt_growth(d2007, d2019, combined):
     # AL: fed, AR: inst, AZ:inst, CA:inst
     # Expect
     data_analysis._plot_map(
-        d07, combined, func='sum', column='EXP_TOT', #########ERROR HERE!!!!
+        d07, combined, func='sum', column='EXP_TOT',  # ERROR HERE!!!!
         log_norm=True, dropna=False)
     data_analysis._save_fig('R&D Expenditures (Test 2007)',
-              dir=pics_dir, filename='growth_2007test.png')
+                            dir=pics_dir, filename='growth_2007test.png')
     data_analysis._plot_map(
         d07, combined, column='MAX_FUND', categorical=True,
         legend_kwds={'loc': 'lower right', 'fontsize': 'small'}, dropna=False)
     data_analysis._save_fig('Primary Funding Source by State',
-              dir=pics_dir, filename='fund_2007test.png')
+                            dir=pics_dir, filename='fund_2007test.png')
     # plots for 2019: we expect highest funding sources for states to be:
     # AL: AR: AZ: CA:
     # Expect
@@ -99,22 +99,23 @@ def test_calc_amt_growth(d2007, d2019, combined):
         d19, combined, func='sum', column='EXP_TOT',
         log_norm=True, dropna=False)
     data_analysis._save_fig('R&D Expenditures (Test 2007)',
-              dir=pics_dir, filename='growth_2019test.png')
+                            dir=pics_dir, filename='growth_2019test.png')
     data_analysis._plot_map(
         d19, combined, column='MAX_FUND', categorical=True,
         legend_kwds={'loc': 'lower right', 'fontsize': 'small'}, dropna=False)
     data_analysis._save_fig('Primary Funding Source by State',
-              dir=pics_dir, filename='fund_2019test.png')
+                            dir=pics_dir, filename='fund_2019test.png')
 
 
 def test_multi_plot(d2007, d2019, combined):
     '''
     Tests the multi_plot function from data_analysis.py
     '''
-    dcombined = pd.concat([d2007, d2019],ignore_index=True)
+    dcombined = pd.concat([d2007, d2019], ignore_index=True)
     print(dcombined)
-    #data_analysis.multi_plot(d2007, d2019, combined)
+    # data_analysis.multi_plot(d2007, d2019, combined)
     print('not done!')
+
 
 def main():
     d2007 = pd.read_csv(abspath(path_2007), encoding='ISO-8859-1')
