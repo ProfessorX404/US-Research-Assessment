@@ -35,7 +35,7 @@ For example:<br />
 <ul>
 -Running data_analysis and func_tests: <br>
 It should be possible to run both data_analysis and funct_tests without any additional inputs.</br></li>
-<li>Run the python executable in command line or a text editor
+<li>Run the python executable in command line or an IDE
 <li>If issues with the directories arise, double-check that the "path" and "geopath" variables point to the correct files</li>
 <li>The path variable should point to the desired year(s) of data (ex. 2007-2019_sanitized.csv)</li>
 <li>Similarly, the path_2007 and path_2019 variables in funct_tests are the two years being tested, and may be any year's data file</li>
