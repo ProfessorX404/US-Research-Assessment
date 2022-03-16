@@ -182,19 +182,19 @@ def multi_plot(data):
     # now grouped into state and then year
     # grab values and subtract last from first then plot it.
     # states = us_state_to_abbrev.values()
-    for state in [x for x in grouped.index.get_level_values(0)
-                  if x not in DROP_STATES]:
-        first_year = min(list(grouped.loc[state, :].index))
-        last_year = max(list(grouped.loc[state, :].index))
-        grouped.loc[state, :]['CHANGE'] =\
-            grouped.loc[(state, last_year), 'Unnamed: 0']\
-            - grouped.loc[(state, first_year), 'Unnamed: 0']
+    # for state in [x for x in grouped.index.get_level_values(0)
+    #               if x not in DROP_STATES]:
+    #     first_year = min(list(grouped.loc[state, :].index))
+    #     last_year = max(list(grouped.loc[state, :].index))
+    #     grouped.loc[state, :]['CHANGE'] =\
+    #         grouped.loc[(state, last_year), 'Unnamed: 0']\
+    #         - grouped.loc[(state, first_year), 'Unnamed: 0']
 
-    top_n = list()
-    bottom_n = list()
-    for change in grouped['CHANGE']:
-        change_max = grouped['CHANGE'].idxmax()
-        change_max = grouped['CHANGE'].idxmax()
+    # top_n = list()
+    # bottom_n = list()
+    # for change in grouped['CHANGE']:
+    #     change_max = grouped['CHANGE'].idxmax()
+    #     change_max = grouped['CHANGE'].idxmax()
 
     plt.clf()
     fig, ax, ax2 = plt.subplot(1)
