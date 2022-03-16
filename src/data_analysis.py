@@ -43,7 +43,7 @@ pics_dir = './plots/'
 DROP_STATES = ['Alaska', 'Hawaii',
                'Puerto Rico', 'Guam', 'U.S. Virgin Islands']
 col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
-             'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
+             'PSY', 'SOC', 'CLIN_TRIAL', 'MED']
 
 # step 2: research subject focus
 # group by research areas
