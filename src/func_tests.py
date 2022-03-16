@@ -35,7 +35,7 @@ def test_school_locs(d2007, d2019, combined):
                             dir=pics_dir, filename='test_2019cts.png')
 
 
-def test_subject_focus(d2007, d2019, combined):
+def test_subject_focus(d2007, d2019):
     '''
     Tests the subject_focus method from data_analysis.py
     '''
@@ -64,30 +64,60 @@ def test_subject_focus(d2007, d2019, combined):
                     'MED': 1141052}, D4)
 
     # Tests plotting of both datasets:
-    # For 2007: Bio, cos/phy, math/psy highest num, Bio, engr, ag, highest NASF
-    data_analysis._plot_focus(D1, D2)
+    # For 2007: Bio, cos/phy, soc highest num, Bio, engr, ag, highest NASF
+    data_analysis._plot_focus(D1, D2, "2007_test")
 
-    #For 2019: Bio, phy, hlth, psy/math/soc high num, bio, eng, phy high NASF
-    data_analysis._plot_focus(D3, D4)
+    # For 2019: Bio, cos/eng, phy, hlth high num, bio, eng, phy high NASF
+    data_analysis._plot_focus(D3, D4, "2019_test")
 
-def test_calc_amt_growth():
+
+def test_calc_amt_growth(d2007, d2019, combined):
     '''
     Tests the calc_amt_growth function from data_analysis.py
     '''
-    print('not done!')
+    d07 = data_analysis.calculate_amount_of_growth(d2007)
+    d19 = data_analysis.calculate_amount_of_growth(d2019)
+    # plots for 2007; we expect the highest funding sources for states to be:
+    # AL: fed, AR: inst, AZ:inst, CA:inst
+    # Expect
+    data_analysis._plot_map(
+        d07, combined, func='sum', column='EXP_TOT', #########ERROR HERE!!!!
+        log_norm=True, dropna=False)
+    data_analysis._save_fig('R&D Expenditures (Test 2007)',
+              dir=pics_dir, filename='growth_2007test.png')
+    data_analysis._plot_map(
+        d07, combined, column='MAX_FUND', categorical=True,
+        legend_kwds={'loc': 'lower right', 'fontsize': 'small'}, dropna=False)
+    data_analysis._save_fig('Primary Funding Source by State',
+              dir=pics_dir, filename='fund_2007test.png')
+    # plots for 2019: we expect highest funding sources for states to be:
+    # AL: AR: AZ: CA:
+    # Expect
+    data_analysis._plot_map(
+        d19, combined, func='sum', column='EXP_TOT',
+        log_norm=True, dropna=False)
+    data_analysis._save_fig('R&D Expenditures (Test 2007)',
+              dir=pics_dir, filename='growth_2019test.png')
+    data_analysis._plot_map(
+        d19, combined, column='MAX_FUND', categorical=True,
+        legend_kwds={'loc': 'lower right', 'fontsize': 'small'}, dropna=False)
+    data_analysis._save_fig('Primary Funding Source by State',
+              dir=pics_dir, filename='fund_2019test.png')
 
 
-def test_multi_plot():
+def test_multi_plot(d2007, d2019, combined):
     '''
     Tests the multi_plot function from data_analysis.py
     '''
-    prit('not done!')
+    dcombined = pd.concat([d2007, d2019],ignore_index=True)
+    print(dcombined)
+    #data_analysis.multi_plot(d2007, d2019, combined)
+    print('not done!')
 
 def main():
     d2007 = pd.read_csv(abspath(path_2007), encoding='ISO-8859-1')
     d2019 = pd.read_csv(abspath(path_2019), encoding='ISO-8859-1')
-    print(d2007.head())
-    print(d2019.head())
+
     combined = gpd.read_file(abspath(geopath), encoding='utf-8')
     combined = combined[~combined['NAME'].isin(DROP_STATES)]
 
@@ -95,7 +125,10 @@ def main():
     test_school_locs(d2007, d2019, combined)
 
     # test focus
-    test_subject_focus(d2007, d2019, combined)
+    test_subject_focus(d2007, d2019)
+
+    # test funding
+    test_calc_amt_growth(d2007, d2019, combined)
 
 
 if __name__ == '__main__':

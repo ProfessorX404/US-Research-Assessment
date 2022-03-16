@@ -79,7 +79,7 @@ def subject_focus(data, to_plot=False):
     return [subj_counts, subj_nasf]
 
 
-def _plot_focus(counts, nasf):
+def _plot_focus(counts, nasf, fname = None):
     '''
     Helper function for subject_focus. Plots the results of analyis from the
     function on two separate plots, one for the most represented subjects and
@@ -109,7 +109,10 @@ def _plot_focus(counts, nasf):
     ax3.set_ylabel("Total square footage")
     #  plt.title("Total Square Footage Per Subject")
     fig.suptitle("Upper Half of Represented Subjects")
-    fig.savefig(pics_dir + "high_subjects.png")
+    if fname is None:
+        fig.savefig(pics_dir + "high_subjects.png")
+    else:
+        fig.savefig(pics_dir + fname + "_high.png")
 
     # plot top half of data
     ax4.bar(s_count_key[7:14], s_count[7:14],
@@ -119,7 +122,10 @@ def _plot_focus(counts, nasf):
             width=1, edgecolor="white", linewidth=0.7)
     ax5.set_ylabel("Total square footage")
     fig2.suptitle("Lower Half of Represented Subjects")
-    fig2.savefig(pics_dir + "low_subjects.png")
+    if fname is None:
+        fig2.savefig(pics_dir + "low_subjects.png")
+    else:
+        fig2.savefig(pics_dir + fname + "_low.png")
 
 # step 3: monetary support of instituions
 # sum amounts of R/R and new construction per institution
@@ -252,8 +258,6 @@ def _plot_map(
     geo.plot(ax=ax, color='#EEEEEE')  # plots all states before merge
     geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
                     how=how)
-
-    # print('before', geo['EXP_TOT'])
     # filters out dropped vals
     if dropna:
         geo = geo.dropna(axis=0, how='any')
@@ -312,7 +316,6 @@ def main():
     # Maps investment in growth by state for 2019
     growth_data = calculate_amount_of_growth(d2019)
     # Plots investment in growth by state for 2019
-    # print(growth_data.columns)
     _plot_map(
         growth_data, combined, func='sum', column='EXP_TOT',
         log_norm=True, dropna=False)
