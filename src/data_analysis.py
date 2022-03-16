@@ -276,6 +276,7 @@ def _plot_map(
     full_snames = {s: abbrev_to_us_state[s] for s in data.index}
     data = data.rename(index=full_snames)
     groupby = data.index
+    geo.plot(ax=ax, color='#EEEEEE') # plots all states before merge
     geo = geo.merge(data, left_on=geo_merge, right_on=groupby,
                     how=how)
 

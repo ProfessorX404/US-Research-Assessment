@@ -68,7 +68,7 @@ def main():
     '''
     Handles main chunk of data sanitization, including initialization and
     path handling. Returns sanitized file. Currently uses hardcoded settings,
-    however it would be nice to at some point revise it for
+    however it would be nice to at some point to revise it for
     argument-set instead. Pulls column names on a year-by-year basis
     from Constants.py
     '''
