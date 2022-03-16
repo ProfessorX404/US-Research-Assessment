@@ -217,6 +217,17 @@ def multi_plot(data):
         ax.plot(years, s_count[i], label=name)
         ax2.plot(years, s_nasf[i], label=name)
         i += 1
+    ax.set_xlabel('Fiscal Year')
+    ax2.set_xlabel('Fiscal Year')
+
+    ax.set_ylabel('Number of Institutions')
+    ax2.set_ylabel('Amount of Square Feet')
+
+    ax.set_title('Institutions with Dedicated Space for Subject Research')
+    ax2.set_title(
+        'Dedicated Space (in sq. ft.) for Subject Research Nationally', y=1.1)
+
+    fig.subplots_adjust(hspace=1)
     fig.savefig(pics_dir + "subj_trends.png")
     # still needs title, legend, possibly adjust formatting;
     # xaxis is screwed up
