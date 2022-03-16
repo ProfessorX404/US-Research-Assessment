@@ -75,11 +75,11 @@ def subject_focus(data, to_plot=False):
         subj_nasf[name] = amt_space
 
     if to_plot:
-        plot_focus(subj_counts, subj_nasf)
+        _plot_focus(subj_counts, subj_nasf)
     return [subj_counts, subj_nasf]
 
 
-def plot_focus(counts, nasf):
+def _plot_focus(counts, nasf):
     '''
     Helper function for subject_focus. Plots the results of analyis from the
     function on two separate plots, one for the most represented subjects and
