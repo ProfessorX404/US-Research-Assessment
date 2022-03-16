@@ -9,7 +9,7 @@ from pathlib import Path
 from os.path import abspath
 import pandas as pd
 import geopandas as gpd
-from Constants import abbrev_to_us_state
+from Constants import abbrev_to_us_state, us_state_to_abbrev
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from collections import defaultdict
@@ -40,7 +40,8 @@ ie   ex:./.env/python.exe ./src/data_analysis.py \
 path = './data/2007-2019_sanitized.csv'
 geopath = './data/state_geodata.json'
 pics_dir = './plots/'
-DROP_STATES = ['Alaska', 'Hawaii', 'Puerto Rico']
+DROP_STATES = ['Alaska', 'Hawaii',
+               'Puerto Rico', 'Guam', 'U.S. Virgin Islands']
 col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
              'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
 
@@ -179,15 +180,25 @@ def multi_plot(data):
     # sort and then plot the top 10(?)
     grouped = data.groupby(by=['INST_STATE', 'YEAR']).count()
     # now grouped into state and then year
-    # grab values and subtract last from first then plot it
-    for state in grouped.index.get_level_values(0):
-        first_year = min(list(grouped.loc[state, :]))
-        last_year = max(list(grouped.loc[state, :]))
-        grouped.loc[state, last_year]['CHANGE'] =\
-            grouped.loc[state, last_year]['Unnamed: 0']\
-            - grouped.loc[state, first_year]['Unnamed: 0']
-    # states = list(grouped.loc[])
-    # change_data = grouped.loc[]
+    # grab values and subtract last from first then plot it.
+    # states = us_state_to_abbrev.values()
+    for state in [x for x in grouped.index.get_level_values(0)
+                  if x not in DROP_STATES]:
+        first_year = min(list(grouped.loc[state, :].index))
+        last_year = max(list(grouped.loc[state, :].index))
+        grouped.loc[state, :]['CHANGE'] =\
+            grouped.loc[(state, last_year), 'Unnamed: 0']\
+            - grouped.loc[(state, first_year), 'Unnamed: 0']
+
+    top_n = list()
+    bottom_n = list()
+    for change in grouped['CHANGE']:
+        change_max = grouped['CHANGE'].idxmax()
+        change_max = grouped['CHANGE'].idxmax()
+
+    plt.clf()
+    fig, ax, ax2 = plt.subplot(1)
+    ax.plot()
     # Question 2:
     # Collect our counts and NASFs by area by year, then convert into a dict.
     # of lists of these for plotting
