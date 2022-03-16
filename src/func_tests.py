@@ -112,8 +112,9 @@ def test_multi_plot(d2007, d2019):
     Tests the multi_plot function from data_analysis.py
     '''
     dcombined = pd.concat([d2007, d2019], ignore_index=True)
+    # we would expect to see relatively similar values from year to year
+    # if we refer back to subject_focus's values
     data_analysis.multi_plot(dcombined, '2007_19_test')
-    print('not done!')
 
 
 def main():
