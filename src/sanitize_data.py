@@ -20,8 +20,7 @@ from Constants import get_column
         ./raw_data/ ./data/ '2015:2019'
     *possible year formats:
         -Single year: 2019, '2019'
-        -Multiple years: [2015, 2017, 2019], ['2015', '2017', '2019'],
-                         '2015:2019'
+        -Multiple years: '2015:2019'
 '''
 
 
@@ -31,14 +30,7 @@ def _parse_years(years):
     from arguments into list of years for the main method to churn through.
     '''
     if isinstance(years, str):
-        if years[0] == '[':
-            print(years)
-            years = years[1:len(years)-1]
-            print(years)
-            years = years.split(',')
-            print(years)
-            years = [int(year) for year in years]
-            return years.sort()
+
         return list(
             range(
                 int(years.split(':')[0]),
@@ -73,11 +65,10 @@ def main():
     from Constants.py
     '''
     # Basic argument handling and read-back.
-    origin_path, location = sys.argv[1:3]
-    years_str = sys.argv[3:]
+    origin_path, location, years_str = sys.argv[1:]
     print('Data File Directory:', origin_path)
     print('Location Directory: ', location)
-    years = [2007]  # _parse_years(years_str)
+    years = _parse_years(years_str)
     years_str = _deparse_years(years)
     print('Year(s): ' + years_str)
     # data is the dictionary that will hold the DataFrames for each year.

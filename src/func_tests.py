@@ -5,7 +5,6 @@ Tests the functions implemented in data_analysis.py. Uses two shortened
 datasets and compares them to calculated values and intended graphs.
 '''
 import data_analysis
-from pathlib import Path
 from os.path import abspath
 import pandas as pd
 import geopandas as gpd
@@ -16,6 +15,7 @@ path_2019 = './data/2019_test.csv'
 geopath = './data/state_geodata.json'
 DROP_STATES = ['Alaska', 'Hawaii', 'Puerto Rico']
 pics_dir = './plots/'
+
 
 def test_school_locs(d2007, d2019, combined):
     '''
@@ -41,27 +41,29 @@ def test_subject_focus(d2007, d2019):
     '''
     # Tests 2007 dataset. Comparison values determined manually via Excel.
     D1, D2 = data_analysis.subject_focus(d2007)
-    assert_equals({'AG': 8, 'BIO': 20, 'COS': 18, 'ENG': 15, 'GEO': 13,
-                   'HLTH': 14, 'MATH':16, 'NR':0, 'PHY':18, 'PSY':16, 'SOC': 17,
-                   'OTH':5, 'CLIN_TRIAL':0, 'MED':5},
-                   D1)
+    assert_equals(
+        {'AG': 8, 'BIO': 20, 'COS': 18, 'ENG': 15, 'GEO': 13, 'HLTH': 14,
+         'MATH': 16, 'NR': 0, 'PHY': 18, 'PSY': 16, 'SOC': 17, 'OTH': 5,
+         'CLIN_TRIAL': 0, 'MED': 5},
+        D1)
     assert_equals({'AG': 1291747, 'BIO': 1362821, 'COS': 138242,
-                    'ENG': 1297715, 'GEO': 356720, 'HLTH': 1120561,
-                    'MATH': 50010, 'NR': 0, 'PHY':1174583, 'PSY': 137168,
-                    'SOC': 250954, 'OTH': 169063, 'CLIN_TRIAL': 0,
-                    'MED': 1058810}, D2)
+                   'ENG': 1297715, 'GEO': 356720, 'HLTH': 1120561,
+                   'MATH': 50010, 'NR': 0, 'PHY': 1174583, 'PSY': 137168,
+                   'SOC': 250954, 'OTH': 169063, 'CLIN_TRIAL': 0,
+                   'MED': 1058810}, D2)
 
     # Tests 2019 dataset. Comparison values determined manually via Excel.
     D3, D4 = data_analysis.subject_focus(d2019)
-    assert_equals({'AG': 9, 'BIO': 21, 'COS': 19, 'ENG': 19, 'GEO': 14,
-                   'HLTH': 17, 'MATH':16, 'NR':9, 'PHY':18, 'PSY':16, 'SOC': 16,
-                   'OTH':3, 'CLIN_TRIAL':6, 'MED':5},
-                   D3)
+    assert_equals(
+        {'AG': 9, 'BIO': 21, 'COS': 19, 'ENG': 19, 'GEO': 14, 'HLTH': 17,
+         'MATH': 16, 'NR': 9, 'PHY': 18, 'PSY': 16, 'SOC': 16, 'OTH': 3,
+         'CLIN_TRIAL': 6, 'MED': 5},
+        D3)
     assert_equals({'AG': 867350, 'BIO': 1872855, 'COS': 175036,
-                    'ENG': 1568029, 'GEO': 425916, 'HLTH': 1003143,
-                    'MATH': 62232, 'NR': 121484, 'PHY':1274448, 'PSY': 180386,
-                    'SOC': 213774, 'OTH': 122865, 'CLIN_TRIAL': 83563,
-                    'MED': 1141052}, D4)
+                   'ENG': 1568029, 'GEO': 425916, 'HLTH': 1003143,
+                   'MATH': 62232, 'NR': 121484, 'PHY': 1274448, 'PSY': 180386,
+                   'SOC': 213774, 'OTH': 122865, 'CLIN_TRIAL': 83563,
+                   'MED': 1141052}, D4)
 
     # Tests plotting of both datasets:
     # For 2007: Bio, cos/phy, soc highest num, Bio, engr, ag, highest NASF

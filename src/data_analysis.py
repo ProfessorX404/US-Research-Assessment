@@ -43,7 +43,7 @@ pics_dir = './plots/'
 DROP_STATES = ['Alaska', 'Hawaii',
                'Puerto Rico', 'Guam', 'U.S. Virgin Islands']
 col_names = ['AG', 'BIO', 'COS', 'ENG', 'GEO', 'HLTH', 'MATH', 'NR', 'PHY',
-             'PSY', 'SOC', 'OTH', 'CLIN_TRIAL', 'MED']
+             'PSY', 'SOC', 'CLIN_TRIAL', 'MED']
 
 # step 2: research subject focus
 # group by research areas
@@ -184,6 +184,7 @@ def multi_plot(data):
     # of lists of these for plotting
     cts = dict()
     nasf = dict()
+    data.drop(['NASF_OTH', 'RR_OTH'], axis=1)
     for year in years:
         cts[year], nasf[year] = subject_focus(data[data['YEAR'] == year])
     all_cts = defaultdict(list)
