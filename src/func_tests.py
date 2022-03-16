@@ -48,18 +48,36 @@ def test_subject_focus(d2007, d2019, combined):
                    'OTH':5, 'CLIN_TRIAL':0, 'MED':5},
                    D1)
     #
-    assert
+    assert_equals({{'AG': 1291747.0, 'BIO': 1362821.0, 'COS': 138242.0,
+                    'ENG': 1297715.0, 'GEO': 356720.0, 'HLTH': 1120561.0,
+                    'MATH': 50010.0, 'NR': 0.0, 'PHY':1174583.0, 'PSY': 137168.0,
+                    'SOC': 250954.0, 'OTH': 169063.0, 'CLIN_TRIAL': 0.0,
+                    'MED': 1058810.0}, D2)
                    '''
-    print(D1)
-    print(D2)
+    #print(D1)
+    #print(D2)
 
-
+    '''
+    D3, D4 = data_analysis.subject_focus(d2019)
+    assert_equals({'AG': 9, 'BIO': 21, 'COS': 19, 'ENG': 19, 'GEO': 14,
+                   'HLTH': 17, 'MATH':16, 'NR':9, 'PHY':18, 'PSY':16, 'SOC': 16,
+                   'OTH':3, 'CLIN_TRIAL':6, 'MED':5},
+                   D3)
+    #
+    assert_equals({{'AG': 867350.0, 'BIO': 1872855.0, 'COS': 175036.0,
+                    'ENG': 1568029.0, 'GEO': 425916.0, 'HLTH': 1003143.0,
+                    'MATH': 62232.0, 'NR': 121484.0, 'PHY':1274448.0, 'PSY': 180386.0,
+                    'SOC': 213774.0, 'OTH': 122865.0, 'CLIN_TRIAL': 83563.0,
+                    'MED': 1141052.0}, D4)
+                   '''
+    #print(D3)
+    #print(D4)
     print('not done!')
 
 
 def test_calc_amt_growth():
     '''
-
+    Tests the calc_amt_growth function from data_analysis.py
     '''
     print('not done!')
 
